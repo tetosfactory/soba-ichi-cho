@@ -199,7 +199,7 @@ body {
   border: 3px solid var(--wood-light);
   border-radius: 10px;
   padding: 15px;
-  min-height: 220px;
+  min-height: auto;
   position: relative;
   box-shadow: inset 0 0 20px rgba(0,0,0,0.6);
 }
@@ -221,7 +221,7 @@ body {
   justify-content: flex-end;
   padding: 10px;
   position: relative;
-  min-height: 180px;
+  min-height: auto;
 }
 
 /* 轤ｹ貊・ｒ髦ｲ豁｢縺吶ｋ縺溘ａ縺ｫ髱咏噪縺ｧ貊代ｉ縺九↑繝・じ繧､繝ｳ縺ｫ螟画峩 */
@@ -955,7 +955,7 @@ button:active {
 /* 笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
    繧ｹ繝槭・邵ｦ逕ｻ髱｢・・ortrait・画怙驕ｩ蛹悶Ξ繧ｹ繝昴Φ繧ｷ繝悶せ繧ｿ繧､繝ｫ
    笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
-@media (max-width: 768px) {
+@media (max-width: 900px) {
   html, body {
     width: 100%;
     height: 100%;
@@ -967,6 +967,7 @@ button:active {
 
   body {
     align-items: flex-start;
+    justify-content: flex-start;
   }
 
   #app {
@@ -989,8 +990,8 @@ button:active {
 
   /* コンパクトヘッダー */
   .game-header {
-    padding: 4px 8px;
-    gap: 4px;
+    padding: 4px 6px;
+    gap: 3px;
     flex-direction: column;
     align-items: stretch;
     flex-shrink: 0;
@@ -1002,43 +1003,43 @@ button:active {
   }
 
   .shop-sign h1 {
-    font-size: 1.1rem;
+    font-size: 1rem;
     letter-spacing: 1px;
   }
 
   .lantern {
-    padding: 1px 6px;
-    font-size: 0.7rem;
+    padding: 1px 5px;
+    font-size: 0.65rem;
   }
 
   .status-panel {
-    padding: 3px 6px;
-    gap: 6px;
+    padding: 2px 4px;
+    gap: 4px;
     flex-wrap: nowrap;
     justify-content: space-between;
   }
 
-  .stat-label { font-size: 0.65rem; }
-  .stat-val   { font-size: 0.82rem; }
+  .stat-label { font-size: 0.6rem; }
+  .stat-val   { font-size: 0.78rem; }
 
   .stat-val.highlight {
-    font-size: 0.88rem;
+    font-size: 0.82rem;
   }
 
   .rep-bar-container {
-    width: 45px;
-    height: 6px;
+    width: 38px;
+    height: 5px;
   }
 
   .btn-quit {
-    padding: 2px 6px;
-    font-size: 0.72rem;
+    padding: 2px 5px;
+    font-size: 0.68rem;
   }
 
   /* お品書き横スクロール */
   .menu-board {
-    padding: 2px 8px;
-    gap: 6px;
+    padding: 2px 6px;
+    gap: 4px;
     overflow-x: auto;
     white-space: nowrap;
     justify-content: flex-start;
@@ -1046,8 +1047,8 @@ button:active {
   }
 
   .menu-tag {
-    font-size: 0.72rem;
-    padding: 2px 6px;
+    font-size: 0.68rem;
+    padding: 2px 5px;
     flex-shrink: 0;
   }
 
@@ -1066,7 +1067,7 @@ button:active {
   /* 客カウンターエリア */
   .counter-section {
     padding: 4px 6px;
-    min-height: 0;
+    min-height: 0 !important;
     flex: 0 0 auto;
   }
 
@@ -1076,22 +1077,22 @@ button:active {
   }
 
   .seat-slot {
-    min-height: 95px;
-    max-height: 115px;
-    padding: 4px 2px;
+    min-height: 0 !important;
+    max-height: 105px;
+    padding: 3px 2px;
     justify-content: space-between;
   }
 
   .customer-avatar {
-    font-size: 2rem;
+    font-size: 1.7rem !important;
   }
 
   .customer-name {
-    font-size: 0.68rem;
+    font-size: 0.65rem;
   }
 
   .order-title {
-    font-size: 0.75rem;
+    font-size: 0.7rem;
   }
 
   .order-quote {
@@ -1099,16 +1100,16 @@ button:active {
   }
 
   .recipe-hint {
-    font-size: 0.85rem;
+    font-size: 0.78rem;
     margin-top: 1px;
   }
 
   .btn-serve, .btn-catch {
     width: 100%;
-    min-height: 34px;
-    font-size: 0.78rem;
-    padding: 2px 4px;
-    border-radius: 10px;
+    min-height: 32px;
+    font-size: 0.72rem;
+    padding: 2px 3px;
+    border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1129,37 +1130,37 @@ button:active {
   .boil-station {
     grid-column: 1;
     grid-row: 1;
-    padding: 4px 6px;
+    padding: 3px 4px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
   }
 
   .boil-station .station-title {
-    font-size: 0.68rem;
+    font-size: 0.65rem;
     margin-bottom: 2px;
     padding-bottom: 1px;
   }
 
   .boil-station .pot-controls {
     flex-direction: row;
-    gap: 4px;
+    gap: 3px;
     flex: 1;
   }
 
   .boil-station .pot-card {
     flex: 1;
     min-width: 0;
-    padding: 2px 4px;
+    padding: 2px 3px;
     gap: 2px;
   }
 
   .pot-label {
-    font-size: 0.65rem;
+    font-size: 0.62rem;
   }
 
   .gauge-wrap {
-    height: 8px;
+    height: 7px;
   }
 
   .pot-btns {
@@ -1167,8 +1168,8 @@ button:active {
   }
 
   .btn-action {
-    min-height: 30px;
-    font-size: 0.72rem;
+    min-height: 28px;
+    font-size: 0.68rem;
     font-weight: bold;
     border-radius: 4px;
     padding: 1px;
@@ -1178,7 +1179,7 @@ button:active {
   .bowl-station {
     grid-column: 2;
     grid-row: 1;
-    padding: 4px 6px;
+    padding: 3px 4px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -1186,106 +1187,106 @@ button:active {
   }
 
   .bowl-station .station-title {
-    font-size: 0.68rem;
+    font-size: 0.65rem;
     margin-bottom: 2px;
     padding-bottom: 1px;
   }
 
   .bowls-container {
     justify-content: space-around;
-    gap: 4px;
+    gap: 3px;
     width: 100%;
   }
 
   .bowl-item {
-    width: 48px;
-    height: 48px;
+    width: 42px;
+    height: 42px;
   }
 
   .bowl-select-tag {
-    bottom: -12px;
-    font-size: 0.6rem;
+    bottom: -11px;
+    font-size: 0.58rem;
   }
 
   /* 食材・トッピング（下段・全幅） */
   .ingredient-station {
     grid-column: 1 / 3;
     grid-row: 2;
-    padding: 4px 6px;
+    padding: 3px 4px;
     display: flex;
     flex-direction: column;
     min-height: 0;
   }
 
   .ingredient-station .station-title {
-    font-size: 0.68rem;
+    font-size: 0.65rem;
     margin-bottom: 2px;
     padding-bottom: 1px;
   }
 
   .ingredient-grid {
     grid-template-columns: repeat(4, 1fr);
-    gap: 4px;
+    gap: 3px;
     flex: 1;
     min-height: 0;
   }
 
   .ingredient-btn {
-    min-height: 38px;
+    min-height: 34px;
     padding: 2px 2px;
-    font-size: 0.72rem;
+    font-size: 0.68rem;
     font-weight: bold;
-    border-radius: 6px;
+    border-radius: 5px;
   }
 
   .soup-icon {
-    width: 14px;
-    height: 14px;
+    width: 13px;
+    height: 13px;
   }
 
   .top-icon {
-    font-size: 0.95rem;
+    font-size: 0.88rem;
   }
 
   /* モーダル */
   .modal-card {
     max-width: 92vw;
     max-height: 90dvh;
-    padding: 14px 12px;
+    padding: 12px 10px;
   }
 
   .modal-card h2 {
-    font-size: 1.5rem;
-    margin-bottom: 6px;
+    font-size: 1.4rem;
+    margin-bottom: 4px;
   }
 
   .difficulty-options {
     flex-direction: column;
-    gap: 6px;
-    margin-top: 6px;
+    gap: 5px;
+    margin-top: 5px;
   }
 
   .btn-diff {
-    padding: 8px 10px;
+    padding: 6px 8px;
     flex-direction: row;
     justify-content: flex-start;
-    gap: 8px;
+    gap: 6px;
   }
 
   .diff-title {
-    font-size: 1rem;
+    font-size: 0.95rem;
   }
 
   .instruction-box {
-    margin: 8px 0;
-    padding: 8px 10px;
-    font-size: 0.78rem;
+    margin: 6px 0;
+    padding: 6px 8px;
+    font-size: 0.75rem;
   }
 
   .btn-primary, .btn-secondary {
     width: 100%;
-    padding: 10px 20px;
-    font-size: 1rem;
+    padding: 8px 16px;
+    font-size: 0.95rem;
   }
 
   /* トースト位置調整 */
@@ -1298,31 +1299,31 @@ button:active {
   }
 
   .toast {
-    font-size: 0.8rem;
-    padding: 6px 12px;
+    font-size: 0.78rem;
+    padding: 5px 10px;
     text-align: center;
   }
 
   /* カットイン・スペシャル演出 */
   .cutin-box {
-    padding: 16px 20px;
-    margin: 0 12px;
+    padding: 14px 16px;
+    margin: 0 10px;
   }
 
   .cutin-avatar {
-    font-size: 3rem;
+    font-size: 2.8rem;
   }
 
   .cutin-name {
-    font-size: 1.3rem;
+    font-size: 1.2rem;
   }
 
   .cutin-text {
-    font-size: 0.88rem;
+    font-size: 0.85rem;
   }
 
   .special-msg {
-    font-size: 1.2rem;
-    padding: 0 12px;
+    font-size: 1.1rem;
+    padding: 0 10px;
   }
 }
