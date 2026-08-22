@@ -1003,7 +1003,7 @@ button:active {
   }
 
   .shop-sign h1 {
-    font-size: 1rem;
+    font-size: 1.05rem;
     letter-spacing: 1px;
   }
 
@@ -1064,7 +1064,7 @@ button:active {
     justify-content: space-between;
   }
 
-  /* 客カウンターエリア */
+  /* 客カウンターエリア（型崩れ完全防護 ＆ ゆったり高さ確保） */
   .counter-section {
     padding: 4px 6px;
     min-height: 0 !important;
@@ -1077,45 +1077,83 @@ button:active {
   }
 
   .seat-slot {
-    min-height: 0 !important;
-    max-height: 105px;
-    padding: 3px 2px;
+    min-height: 135px !important;
+    max-height: 155px;
+    padding: 4px 2px;
+    display: flex;
+    flex-direction: column;
     justify-content: space-between;
+    align-items: center;
   }
 
-  .customer-avatar {
-    font-size: 1.7rem !important;
+  .customer-card {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
   }
 
-  .customer-name {
-    font-size: 0.65rem;
+  .customer-speech {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 2px 4px;
+    border-radius: 6px;
+    width: 100%;
+    text-align: center;
+    margin-bottom: 2px;
+    border: 1px solid var(--wood-dark);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
   }
 
   .order-title {
-    font-size: 0.7rem;
+    font-size: 0.72rem;
+    font-weight: bold;
+    color: var(--accent-red);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .order-quote {
-    display: none;
+    display: none; /* スマホではセリフを省いてレイアウト崩れを完全に防ぐ */
   }
 
   .recipe-hint {
-    font-size: 0.78rem;
+    font-size: 0.85rem;
     margin-top: 1px;
+    line-height: 1.1;
+  }
+
+  .customer-avatar {
+    font-size: 2rem !important;
+    margin: 2px 0;
+  }
+
+  .customer-name {
+    font-size: 0.68rem;
+    color: var(--text-gold);
+  }
+
+  .patience-bar, .escape-bar {
+    width: 90%;
+    height: 5px;
+    margin: 2px 0;
   }
 
   .btn-serve, .btn-catch {
     width: 100%;
-    min-height: 32px;
-    font-size: 0.72rem;
-    padding: 2px 3px;
-    border-radius: 8px;
+    min-height: 34px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    padding: 2px 4px;
+    border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
   }
 
-  /* 厨房エリア：上（茹で釜 + 丼）/ 下（食材） 2段レイアウト */
+  /* 厨房エリア：上（茹で釜 + 丼）/ 下（超コンパクト食材） */
   .kitchen-section {
     flex: 1;
     min-height: 0;
@@ -1199,8 +1237,8 @@ button:active {
   }
 
   .bowl-item {
-    width: 42px;
-    height: 42px;
+    width: 44px;
+    height: 44px;
   }
 
   .bowl-select-tag {
@@ -1208,7 +1246,7 @@ button:active {
     font-size: 0.58rem;
   }
 
-  /* 食材・トッピング（下段・全幅） */
+  /* 食材・トッピング（下段・全幅：高さ縮小 ＆ 横並びアイコンカプセル） */
   .ingredient-station {
     grid-column: 1 / 3;
     grid-row: 2;
@@ -1232,20 +1270,34 @@ button:active {
   }
 
   .ingredient-btn {
-    min-height: 34px;
-    padding: 2px 2px;
+    min-height: 32px;
+    height: 34px;
+    padding: 2px 3px;
     font-size: 0.68rem;
     font-weight: bold;
     border-radius: 5px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+  }
+
+  .ingredient-btn span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .soup-icon {
     width: 13px;
     height: 13px;
+    flex-shrink: 0;
   }
 
   .top-icon {
     font-size: 0.88rem;
+    flex-shrink: 0;
   }
 
   /* モーダル */
