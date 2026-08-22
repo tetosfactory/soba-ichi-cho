@@ -109,16 +109,21 @@ document.addEventListener('DOMContentLoaded', () => {
   // 初期画面でのセーブチェック
   updateSaveDataUI();
 
-  // 横画面固定リクエスト（サポート端末向け）
-  function tryLockLandscape() {
-    if (window.screen && window.screen.orientation && window.screen.orientation.lock) {
-      window.screen.orientation.lock('landscape').catch(() => {});
+  // 全画面リクエスト（ゲーム開始時）
+  function tryRequestFullscreen() {
+    const el = document.documentElement;
+    const req = el.requestFullscreen
+      || el.webkitRequestFullscreen
+      || el.mozRequestFullScreen
+      || el.msRequestFullscreen;
+    if (req) {
+      req.call(el).catch(() => {});
     }
   }
 
   // イベントバインディング：最初から始める
   btnStartGame.addEventListener('click', () => {
-    tryLockLandscape();
+    tryRequestFullscreen();
     game.clearSaveData();
     modalOverlay.classList.add('hidden');
     game.setDifficulty(selectedDifficulty);
@@ -128,7 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // イベントバインディング：続きから始める
   if (btnContinueGame) {
     btnContinueGame.addEventListener('click', () => {
-      tryLockLandscape();
+      tryRequestFullscreen();
       modalOverlay.classList.add('hidden');
       game.startFromSave();
     });

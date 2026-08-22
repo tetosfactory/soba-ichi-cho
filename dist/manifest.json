@@ -3,8 +3,8 @@
   "short_name": "そば一丁！",
   "description": "昭和レトロな立ち食い蕎麦屋のワンオペ切り盛りアクションゲーム！スマホ横画面対応！",
   "start_url": "./index.html",
-  "display": "standalone",
-  "orientation": "landscape",
+  "display": "fullscreen",
+  "orientation": "portrait",
   "background_color": "#1f140e",
   "theme_color": "#2b1b12",
   "icons": [

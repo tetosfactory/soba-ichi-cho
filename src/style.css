@@ -1,4 +1,4 @@
-/* 昭和レトロ 立ち食い蕎麦屋ゲーム スタイルシート */
+/* 昭和レトロ 立ち食い蕎麦屋ゲーム スタイルシーチE*/
 
 :root {
   --bg-dark: #1f140e;
@@ -51,7 +51,7 @@ body {
   overflow: hidden;
 }
 
-/* ヘッダー＆看板 */
+/* ヘッダー�E�E��板 */
 .game-header {
   background: linear-gradient(180deg, var(--wood-dark) 0%, var(--wood-border) 100%);
   border-bottom: 3px solid var(--accent-gold);
@@ -153,7 +153,7 @@ body {
   padding: 4px;
 }
 
-/* 壁掛けお品書き */
+/* 壁掛けお品書ぁE*/
 .menu-board {
   display: flex;
   justify-content: center;
@@ -184,7 +184,7 @@ body {
   color: #fff;
 }
 
-/* メインビューポート */
+/* メインビューポ�EチE*/
 .game-viewport {
   display: flex;
   flex-direction: column;
@@ -193,7 +193,7 @@ body {
   gap: 15px;
 }
 
-/* カウンター＆客エリア */
+/* カウンター�E�E��エリア */
 .counter-section {
   background: linear-gradient(180deg, #442a17 0%, #29180c 100%);
   border: 3px solid var(--wood-light);
@@ -224,16 +224,16 @@ body {
   min-height: 180px;
 }
 
-/* 点滅を防止するために静的で滑らかなデザインに変更 */
+/* 点滁E��防止するために静的で滑らかなチE��インに変更 */
 .customer-card {
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  /* アニメーションによる点滅・チラつきを完全排除 */
+  /* アニメーションによる点滁E�Eチラつきを完�E排除 */
 }
 
-/* 吹き出し注文 */
+/* 吹き�Eし注斁E*/
 .speech-bubble {
   background: #fff;
   color: var(--text-dark);
@@ -297,7 +297,7 @@ body {
   margin-top: 2px;
 }
 
-/* 忍耐度タイマーバー */
+/* 忍耐度タイマ�Eバ�E */
 .patience-bar {
   width: 80%;
   height: 6px;
@@ -310,10 +310,10 @@ body {
 .patience-fill {
   height: 100%;
   background: linear-gradient(90deg, #e76f51 0%, #2a9d8f 100%);
-  transition: width 1s linear; /* なめらかな進行 */
+  transition: width 1s linear; /* なめらかな進衁E*/
 }
 
-/* 月見の銀二の食い逃げモード＆ボタン */
+/* 月見�E銀二�E食い送E��モード！E�Eタン */
 .ginji-card {
   border: 2px solid var(--accent-red);
   border-radius: 8px;
@@ -344,7 +344,7 @@ body {
   margin-top: 6px;
 }
 
-/* 提供ボタン */
+/* 提供�Eタン */
 .btn-serve {
   background: linear-gradient(180deg, #2a9d8f 0%, #1d6d63 100%);
   color: #fff;
@@ -361,7 +361,7 @@ body {
   filter: brightness(1.2);
 }
 
-/* 厨房ステーション */
+/* 厨房スチE�Eション */
 .kitchen-section {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
@@ -386,7 +386,7 @@ body {
   font-weight: bold;
 }
 
-/* 茹で釜 */
+/* 茹で釁E*/
 .pot-controls {
   display: flex;
   flex-direction: column;
@@ -464,7 +464,7 @@ body {
   background: linear-gradient(90deg, #f72585 0%, #4cc9f0 50%, #ffd166 100%);
 }
 
-/* ジャスト湯切りボタン（金色に光るパルス） */
+/* ジャスト湯刁E��ボタン�E���色に光るパルス�E�E*/
 .btn-get-perfect {
   background: linear-gradient(180deg, #ffd166 0%, #f4a261 100%) !important;
   color: #1a1a1a !important;
@@ -478,7 +478,7 @@ body {
   to   { box-shadow: 0 0 10px rgba(255, 209, 102, 1);  transform: scale(1.05); }
 }
 
-/* どんぶりステーション */
+/* どん�EりスチE�Eション */
 .bowls-container {
   display: flex;
   justify-content: space-around;
@@ -575,7 +575,7 @@ body {
   font-weight: bold;
 }
 
-/* 食材＆トッピンググリッド */
+/* 食材�E�E��チE��ンググリチE�� */
 .ingredient-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -680,7 +680,7 @@ body {
   margin-top: 4px;
 }
 
-/* トースト通知 */
+/* ト�Eスト通知 */
 .toast-container {
   position: fixed;
   top: 80px;
@@ -706,7 +706,7 @@ body {
 .toast.danger { background-color: #d62828; }
 .toast.info { background-color: #457b9d; }
 
-/* 月見の銀二カットイン演出 */
+/* 月見�E銀二カチE��イン演�E */
 .cutin-overlay {
   position: absolute;
   inset: 0;
@@ -752,7 +752,7 @@ body {
   color: #fff;
 }
 
-/* スペシャル演出 */
+/* スペシャル演�E */
 .special-overlay {
   position: absolute;
   inset: 0;
@@ -857,7 +857,7 @@ body {
 }
 
 /* ──────────────────────────────────────────────────────────
-   レベル2 & コロッケのお銀 用追加スタイル
+   レベル2 & コロチE��のお銀 用追加スタイル
    ────────────────────────────────────────────────────────── */
 .highlight-level {
   color: #ff9f1c;
@@ -896,7 +896,7 @@ body {
 }
 
 /* ──────────────────────────────────────────────────────────
-   オートセーブ ＆ 中断ボタン スタイル
+   オートセーチE�E�E中断ボタン スタイル
    ────────────────────────────────────────────────────────── */
 .btn-quit {
   background: rgba(184, 42, 36, 0.8);
@@ -946,86 +946,29 @@ body {
 }
 
 /* ──────────────────────────────────────────────────────────
-   ボタンタップ時のフィードバックエフェクト（スマホ操作性向上）
-   ────────────────────────────────────────────────────────── */
+   ボタンタチE�E時�EフィードバチE��エフェクト（スマ�E操作性向上！E   ────────────────────────────────────────────────────────── */
 button:active {
   transform: scale(0.95) !important;
   filter: brightness(1.15);
 }
 
 /* ──────────────────────────────────────────────────────────
-   スマホ縦画面（Portrait）時の横回転要求オーバーレイ
+   スマ�E縦画面�E�Eortrait�E�最適化レスポンシブスタイル
    ────────────────────────────────────────────────────────── */
-.orientation-overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: linear-gradient(135deg, #1f140e 0%, #0a0503 100%);
-  z-index: 9999;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
-  text-align: center;
-}
-
-@media (orientation: portrait) and (max-width: 900px) {
-  .orientation-overlay {
-    display: flex !important;
-  }
-}
-
-.orientation-box {
-  background: linear-gradient(180deg, var(--wood-dark) 0%, var(--wood-border) 100%);
-  border: 4px solid var(--accent-gold);
-  border-radius: 16px;
-  padding: 30px 24px;
-  max-width: 360px;
-  box-shadow: 0 0 35px rgba(0, 0, 0, 0.95);
-}
-
-.rotate-icon {
-  font-size: 4.5rem;
-  margin-bottom: 12px;
-  display: inline-block;
-  animation: rotate-phone 2.5s infinite ease-in-out;
-}
-
-@keyframes rotate-phone {
-  0%, 20% { transform: rotate(0deg); }
-  50%, 70% { transform: rotate(-90deg); }
-  90%, 100% { transform: rotate(0deg); }
-}
-
-.rotate-title {
-  font-family: var(--font-mincho);
-  color: var(--text-gold);
-  font-size: 1.4rem;
-  margin-bottom: 12px;
-  letter-spacing: 2px;
-}
-
-.rotate-desc {
-  color: var(--text-light);
-  font-size: 0.9rem;
-  line-height: 1.6;
-}
-
-/* ──────────────────────────────────────────────────────────
-   スマホ横画面（Landscape）最適化レスポンシブスタイル
-   ────────────────────────────────────────────────────────── */
-@media (max-width: 1024px) and (orientation: landscape), (max-height: 600px) {
+@media (max-width: 768px) {
   html, body {
-    width: 100%;
     height: 100%;
-    overflow: hidden;
+    overflow-x: hidden;
+  }
+
+  body {
+    align-items: flex-start;
   }
 
   #app {
     width: 100vw;
-    height: 100vh;
-    height: 100dvh;
+    min-height: 100dvh;
     max-width: 100vw;
-    max-height: 100vh;
     border-radius: 0;
     border: none;
     padding-top: env(safe-area-inset-top);
@@ -1034,63 +977,56 @@ button:active {
     padding-right: env(safe-area-inset-right);
   }
 
-  /* コンパクトヘッダー */
+  /* コンパクト�EチE��ー */
   .game-header {
-    padding: 4px 12px;
-    gap: 8px;
-    flex-wrap: nowrap;
-    border-bottom-width: 2px;
+    padding: 6px 12px;
+    gap: 6px;
+    flex-direction: column;
+    align-items: stretch;
   }
 
   .shop-sign {
-    gap: 8px;
-  }
-
-  .shop-sign h1 {
-    font-size: 1.15rem;
-    letter-spacing: 1px;
-  }
-
-  .lantern {
-    padding: 2px 6px;
-    font-size: 0.75rem;
-  }
-
-  .status-panel {
-    padding: 2px 8px;
+    justify-content: center;
     gap: 10px;
   }
 
-  .stat-label {
-    font-size: 0.65rem;
+  .shop-sign h1 {
+    font-size: 1.4rem;
+    letter-spacing: 2px;
   }
 
-  .stat-val {
-    font-size: 0.9rem;
+  .lantern {
+    padding: 3px 8px;
+    font-size: 0.8rem;
   }
+
+  .status-panel {
+    padding: 4px 10px;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .stat-label { font-size: 0.68rem; }
+  .stat-val   { font-size: 0.95rem; }
 
   .stat-val.highlight {
-    font-size: 0.95rem;
+    font-size: 1rem;
   }
 
   .rep-bar-container {
-    width: 50px;
+    width: 60px;
     height: 8px;
   }
 
-  .btn-icon {
-    font-size: 1.1rem;
-    padding: 2px;
-  }
-
   .btn-quit {
-    padding: 2px 8px;
-    font-size: 0.75rem;
+    padding: 3px 10px;
+    font-size: 0.8rem;
   }
 
-  /* コンパクト壁掛けお品書き */
+  /* お品書き横スクロール */
   .menu-board {
-    padding: 3px 10px;
+    padding: 4px 10px;
     gap: 8px;
     overflow-x: auto;
     white-space: nowrap;
@@ -1098,45 +1034,42 @@ button:active {
   }
 
   .menu-tag {
-    font-size: 0.75rem;
-    padding: 2px 8px;
+    font-size: 0.8rem;
+    padding: 3px 10px;
     flex-shrink: 0;
   }
 
-  /* ゲームエリア（横向き3カラムワイドレイアウト） */
+  /* ゲームエリア�E�縦並び */
   .game-viewport {
-    padding: 6px 10px;
-    gap: 8px;
-    flex-direction: row;
+    flex-direction: column;
+    padding: 8px 10px;
+    gap: 10px;
     flex: 1;
-    min-height: 0;
-    overflow: hidden;
   }
 
-  /* 左カラム：客カウンターエリア */
+  /* 客カウンター */
   .counter-section {
-    flex: 1;
-    min-width: 0;
-    min-height: 0;
+    min-height: auto;
     padding: 8px;
-    display: flex;
-    flex-direction: column;
   }
 
   .seats-container {
     grid-template-columns: repeat(3, 1fr);
-    gap: 6px;
-    height: 100%;
+    gap: 8px;
   }
 
   .seat-slot {
-    min-height: 0;
-    padding: 4px;
+    min-height: 130px;
+    padding: 6px;
     justify-content: space-between;
   }
 
   .customer-avatar {
-    font-size: 2.2rem;
+    font-size: 2.6rem;
+  }
+
+  .customer-name {
+    font-size: 0.75rem;
   }
 
   .order-title {
@@ -1144,7 +1077,7 @@ button:active {
   }
 
   .order-quote {
-    display: none; /* スマホ横画面ではセリフを省いてボタン押しやすさを優先 */
+    font-size: 0.75rem;
   }
 
   .recipe-hint {
@@ -1152,161 +1085,170 @@ button:active {
     margin-top: 2px;
   }
 
-  .customer-name {
-    font-size: 0.7rem;
-  }
-
   .btn-serve, .btn-catch {
     width: 100%;
     min-height: 44px;
     font-size: 0.85rem;
-    padding: 4px 6px;
-    border-radius: 16px;
+    padding: 6px 4px;
+    border-radius: 14px;
     display: flex;
     align-items: center;
     justify-content: center;
   }
 
-  /* 右2/3：厨房エリア（grid 2列 x 2行） */
+  /* 厨房�E�縦並び3スチE�Eション */
   .kitchen-section {
-    flex: 2.1;
-    min-width: 0;
-    min-height: 0;
-    display: grid;
-    grid-template-columns: 1fr 1.2fr;
-    grid-template-rows: auto 1fr;
+    grid-template-columns: 1fr;
     gap: 8px;
   }
 
-  /* 茹で釜ステーション（左側全高） */
-  .boil-station {
-    grid-column: 1;
-    grid-row: 1 / 3;
-    padding: 8px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+  /* 茹で釜：横3列並び */
+  .boil-station .pot-controls {
+    flex-direction: row;
+    gap: 8px;
   }
 
-  .station-title {
-    font-size: 0.75rem;
-    margin-bottom: 6px;
-    padding-bottom: 2px;
-  }
-
-  .pot-controls {
-    gap: 6px;
+  .boil-station .pot-card {
     flex: 1;
-    justify-content: space-around;
-  }
-
-  .pot-card {
-    padding: 4px 6px;
-    gap: 4px;
+    min-width: 0;
+    padding: 6px;
   }
 
   .pot-label {
-    font-size: 0.75rem;
-  }
-
-  .gauge-wrap {
-    height: 10px;
-  }
-
-  .pot-btns {
-    gap: 4px;
-  }
-
-  .btn-action {
-    min-height: 40px;
-    font-size: 0.8rem;
-    font-weight: bold;
-    border-radius: 6px;
-  }
-
-  /* どんぶりステーション（右上） */
-  .bowl-station {
-    grid-column: 2;
-    grid-row: 1;
-    padding: 6px 8px;
-  }
-
-  .bowls-container {
-    gap: 12px;
-  }
-
-  .bowl-item {
-    width: 60px;
-    height: 60px;
-  }
-
-  .bowl-select-tag {
-    bottom: -16px;
-    font-size: 0.65rem;
-  }
-
-  /* 食材ステーション（右下） */
-  .ingredient-station {
-    grid-column: 2;
-    grid-row: 2;
-    padding: 8px;
-    min-height: 0;
-  }
-
-  .ingredient-grid {
-    grid-template-columns: repeat(4, 1fr);
-    gap: 6px;
-    height: 100%;
-  }
-
-  .ingredient-btn {
-    min-height: 48px;
-    padding: 4px 2px;
-    font-size: 0.75rem;
-    font-weight: bold;
-    border-radius: 6px;
-  }
-
-  .soup-icon {
-    width: 18px;
-    height: 18px;
-  }
-
-  .top-icon {
-    font-size: 1.1rem;
-  }
-
-  /* モーダルカード調整 */
-  .modal-card {
-    max-width: 90vw;
-    max-height: 90vh;
-    padding: 16px 20px;
-  }
-
-  .modal-card h2 {
-    font-size: 1.6rem;
-    margin-bottom: 6px;
-  }
-
-  .difficulty-options {
-    gap: 8px;
-    margin-top: 6px;
-  }
-
-  .btn-diff {
-    padding: 6px 8px;
-  }
-
-  .instruction-box {
-    margin: 8px 0;
-    padding: 8px 12px;
     font-size: 0.78rem;
   }
 
+  .gauge-wrap {
+    height: 12px;
+  }
+
+  .btn-action {
+    min-height: 42px;
+    font-size: 0.82rem;
+    font-weight: bold;
+    border-radius: 6px;
+  }
+
+  /* どん�EめE*/
+  .bowl-station {
+    padding: 8px 10px;
+  }
+
+  .bowls-container {
+    justify-content: space-around;
+    gap: 20px;
+  }
+
+  .bowl-item {
+    width: 72px;
+    height: 72px;
+  }
+
+  .bowl-select-tag {
+    bottom: -18px;
+    font-size: 0.7rem;
+  }
+
+  /* 食材・トッピング�E�E列グリチE�� */
+  .ingredient-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+
+  .ingredient-btn {
+    min-height: 58px;
+    padding: 6px 4px;
+    font-size: 0.82rem;
+    font-weight: bold;
+    border-radius: 8px;
+  }
+
+  .soup-icon {
+    width: 22px;
+    height: 22px;
+  }
+
+  .top-icon {
+    font-size: 1.3rem;
+  }
+
+  /* モーダル */
+  .modal-card {
+    max-width: 95vw;
+    max-height: 92dvh;
+    padding: 18px 16px;
+  }
+
+  .modal-card h2 {
+    font-size: 1.8rem;
+    margin-bottom: 8px;
+  }
+
+  .difficulty-options {
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  .btn-diff {
+    padding: 10px 12px;
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 10px;
+  }
+
+  .diff-title {
+    font-size: 1.1rem;
+  }
+
+  .instruction-box {
+    margin: 10px 0;
+    padding: 10px 12px;
+    font-size: 0.82rem;
+  }
+
   .btn-primary, .btn-secondary {
-    padding: 8px 24px;
-    font-size: 1rem;
+    width: 100%;
+    padding: 12px 24px;
+    font-size: 1.1rem;
+  }
+
+  /* ト�Eスト位置調整 */
+  .toast-container {
+    top: auto;
+    bottom: 12px;
+    right: 12px;
+    left: 12px;
+    align-items: center;
+  }
+
+  .toast {
+    font-size: 0.85rem;
+    padding: 8px 14px;
+    text-align: center;
+  }
+
+  /* カチE��イン・スペシャル演�E */
+  .cutin-box {
+    padding: 20px 24px;
+    margin: 0 16px;
+  }
+
+  .cutin-avatar {
+    font-size: 3.5rem;
+  }
+
+  .cutin-name {
+    font-size: 1.5rem;
+  }
+
+  .cutin-text {
+    font-size: 0.95rem;
+  }
+
+  .special-msg {
+    font-size: 1.3rem;
+    padding: 0 16px;
   }
 }
-
 
