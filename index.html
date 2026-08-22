@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>そば一丁！ 〜月見の銀二とコロッケのお銀〜</title>
+  <meta name="theme-color" content="#2b1b12">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="manifest" href="./manifest.json">
+  <link rel="icon" type="image/svg+xml" href="./icon.svg">
+  <link rel="apple-touch-icon" href="./icon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@700;800&family=Zen+Maru+Gothic:wght@500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./src/style.css">
+</head>
+<body>
+  <div id="app">
+    <!-- レトロ看板＆ステータスバー -->
+    <header class="game-header">
+      <div class="shop-sign">
+        <div class="lantern left">🏮 蕎麦</div>
+        <h1 id="app-title">そば一丁！</h1>
+        <div class="lantern right">🏮 営業中</div>
+      </div>
+      <div class="status-panel">
+        <div class="stat-item">
+          <span class="stat-label">モード</span>
+          <span id="stat-mode" class="stat-val highlight-mode">かんたん</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">レベル</span>
+          <span id="stat-level" class="stat-val highlight-level">Lv.1</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">日</span>
+          <span id="stat-day" class="stat-val">第 1 日目</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">残り時間</span>
+          <span id="stat-time" class="stat-val highlight">90 秒</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">売上 / 目標</span>
+          <span id="stat-score" class="stat-val">0円 / 1500円</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">店の評判</span>
+          <div class="rep-bar-container">
+            <div id="rep-bar-fill" class="rep-bar-fill" style="width: 100%;"></div>
+          </div>
+          <span id="stat-rep" class="stat-sub">100%</span>
+        </div>
+        <button id="btn-sound-toggle" class="btn-icon" title="音量切替">🔊</button>
+        <button id="btn-quit-game" class="btn-quit" title="ゲームをやめる">🚪 やめる</button>
+      </div>
+    </header>
+
+    <!-- お品書き（壁掛け札） -->
+    <div class="menu-board">
+      <div class="menu-tag">かけそば <small>350円</small></div>
+      <div class="menu-tag">ネギそば <small>400円</small></div>
+      <div class="menu-tag highlight-tag">月見そば <small>450円</small></div>
+      <div class="menu-tag level2-tag level2-locked" id="menu-tag-korokke">🔒 コロッケそば <small>500円</small></div>
+      <div class="menu-tag notice-tag">⚠️ 立食い師無銭飲食警戒中</div>
+    </div>
+
+    <main class="game-viewport">
+      <!-- 客カウンターエリア -->
+      <section class="counter-section">
+        <div class="counter-table">
+          <div id="seats-container" class="seats-container">
+            <!-- JavaScriptで差分更新描画 (席0, 席1, 席2) -->
+          </div>
+        </div>
+      </section>
+
+      <!-- 厨房・調理台エリア -->
+      <section class="kitchen-section">
+        <!-- 茹で釜ステーション -->
+        <div class="station-box boil-station">
+          <div class="station-title">♨️ 茹で釜（麺の茹で加減）</div>
+          <div class="pot-controls">
+            <!-- 二八そば -->
+            <div class="pot-card" id="pot-nihachi">
+              <span class="pot-label">二八そば</span>
+              <div class="gauge-wrap">
+                <div class="gauge-zone perfect-zone"></div>
+                <div class="gauge-fill" id="pot-nihachi-fill"></div>
+              </div>
+              <div class="pot-btns">
+                <button class="btn-action" id="btn-boil-nihachi">茹でる</button>
+                <button class="btn-action btn-get" id="btn-get-nihachi" disabled>丼へ盛る</button>
+              </div>
+            </div>
+            <!-- 十割そば -->
+            <div class="pot-card" id="pot-juwari">
+              <span class="pot-label">十割そば</span>
+              <div class="gauge-wrap">
+                <div class="gauge-zone perfect-zone"></div>
+                <div class="gauge-fill" id="pot-juwari-fill"></div>
+              </div>
+              <div class="pot-btns">
+                <button class="btn-action" id="btn-boil-juwari">茹でる</button>
+                <button class="btn-action btn-get" id="btn-get-juwari" disabled>丼へ盛る</button>
+              </div>
+            </div>
+            <!-- へぎ蕎麦 (Lv.2解放) -->
+            <div class="pot-card level2-locked" id="pot-hegi">
+              <span class="pot-label">へぎ蕎麦 <small>(Lv.2)</small></span>
+              <div class="gauge-wrap">
+                <div class="gauge-zone perfect-zone"></div>
+                <div class="gauge-fill" id="pot-hegi-fill"></div>
+              </div>
+              <div class="pot-btns">
+                <button class="btn-action" id="btn-boil-hegi" disabled>茹でる</button>
+                <button class="btn-action btn-get" id="btn-get-hegi" disabled>丼へ盛る</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 盛り付け丼ステーション -->
+        <div class="station-box bowl-station">
+          <div class="station-title">🍜 調理中どんぶり (選択してトッピング/提供)</div>
+          <div id="bowls-container" class="bowls-container">
+            <!-- どんぶり3つ -->
+          </div>
+        </div>
+
+        <!-- 材量・出汁・トッピング・特殊調理台 -->
+        <div class="station-box ingredient-station">
+          <div class="station-title">🧂 出汁 ＆ トッピング</div>
+          <div class="ingredient-grid">
+            <button class="ingredient-btn dashi-btn" id="btn-dashi-katsuo">
+              <div class="soup-icon katsuo-icon"></div>
+              <span>かつお出汁</span>
+            </button>
+            <button class="ingredient-btn dashi-btn" id="btn-dashi-niboshi">
+              <div class="soup-icon niboshi-icon"></div>
+              <span>煮干し出汁</span>
+            </button>
+            <button class="ingredient-btn dashi-btn level2-locked" id="btn-dashi-kombu" disabled>
+              <div class="soup-icon kombu-icon"></div>
+              <span>こんぶ出汁 <small>(Lv.2)</small></span>
+            </button>
+
+            <button class="ingredient-btn topping-btn" id="btn-top-negi">
+              <span class="top-icon">🥬</span>
+              <span>刻みネギ</span>
+            </button>
+            <button class="ingredient-btn topping-btn" id="btn-top-egg">
+              <span class="top-icon">🥚</span>
+              <span>生卵</span>
+            </button>
+            <button class="ingredient-btn topping-btn level2-locked" id="btn-top-korokke" disabled>
+              <span class="top-icon">🧆</span>
+              <span>コロッケ <small>(Lv.2)</small></span>
+            </button>
+
+            <!-- 隠し/特殊トッピング：激辛七味 -->
+            <button class="ingredient-btn secret-btn" id="btn-top-chili" title="対・立食い師専用トラップ">
+              <span class="top-icon">🌶️</span>
+              <span>激辛七味</span>
+            </button>
+            <button class="ingredient-btn trash-btn" id="btn-trash">
+              <span class="top-icon">🗑️</span>
+              <span>捨ててやり直す</span>
+            </button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- トースト通知 -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- カットイン演出オーバーレイ -->
+    <div id="cutin-overlay" class="cutin-overlay hidden">
+      <div class="cutin-box">
+        <div class="cutin-title" id="cutin-title">⚡ 立食い師 襲来 ⚡</div>
+        <div class="cutin-avatar" id="cutin-avatar">🕵️‍♂️</div>
+        <div class="cutin-name" id="cutin-name">月見の銀二</div>
+        <div class="cutin-text" id="cutin-text">「……いつもの、かつお十割の月見だ。」</div>
+      </div>
+    </div>
+
+    <!-- スペシャル演出（七味撃退 / パーフェクト感動） -->
+    <div id="special-overlay" class="special-overlay hidden">
+      <div class="special-content">
+        <div id="special-icon" class="special-icon">🔥</div>
+        <div id="special-msg" class="special-msg">「グはッ！？この激辛七味は…！」</div>
+      </div>
+    </div>
+
+    <!-- スタート / 結果モーダル -->
+    <div id="modal-overlay" class="modal-overlay">
+      <div class="modal-card">
+        <h2 id="modal-title">そば一丁！</h2>
+        <div class="modal-body" id="modal-body">
+          <p>ワンオペで立ち食い蕎麦屋を切り盛りしよう！</p>
+          
+          <div class="difficulty-select-section">
+            <p><b>難易度を選んでください</b></p>
+            <div class="difficulty-options">
+              <button class="btn-diff active" data-diff="easy">
+                <span class="diff-title">かんたん</span>
+                <small>（待ち時間たっぷり！初心者向け）</small>
+              </button>
+              <button class="btn-diff" data-diff="normal">
+                <span class="diff-title">ふつう</span>
+                <small>（ちょうど良いお手軽バランス）</small>
+              </button>
+              <button class="btn-diff" data-diff="hard">
+                <span class="diff-title">むずかしい</span>
+                <small>（スピード勝負！上級者向け）</small>
+              </button>
+            </div>
+          </div>
+
+          <div class="instruction-box">
+            <h4>⚠️ イレギュラー警報：立食い師たちの襲来！</h4>
+            <ul>
+              <li><b>『月見の銀二』</b>：注文は「かつお出汁 + 十割そば + ネギ + 生卵」</li>
+              <li><b>『コロッケのお銀』</b>（Lv.2登場）：注文は「こんぶ出汁 + 二八そば + ネギ + コロッケ」</li>
+              <li>撃退法：<b>【激辛七味】</b>を入れるか、<b>ジャスト茹で</b>で感動させよ！</li>
+              <li>逃げ出したら<b>「お会計」連打</b>で捕まえろ！</li>
+            </ul>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button id="btn-start-game" class="btn-primary">最初から始める！</button>
+          <button id="btn-continue-game" class="btn-secondary hidden">続きから始める</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 縦画面（Portrait）時の画面横向き回転案内オーバーレイ -->
+    <div id="orientation-overlay" class="orientation-overlay">
+      <div class="orientation-box">
+        <div class="rotate-icon">📱↻</div>
+        <h2 class="rotate-title">画面を横向きにしてください</h2>
+        <p class="rotate-desc">「そば一丁！」はスマートフォンの画面を横向き（Landscape）にして遊ぶゲームです。<br>端末を横向きに回転してください。</p>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>
