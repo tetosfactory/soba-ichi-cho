@@ -17,8 +17,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@700;800&family=Zen+Maru+Gothic:wght@500;700;900&display=swap" rel="stylesheet">
-  <script type="module" crossorigin src="/soba-ichi-cho/assets/index-zahjHB1K.js"></script>
-  <link rel="stylesheet" crossorigin href="/soba-ichi-cho/assets/index-C3GOI-Oa.css">
+  <script type="module" crossorigin src="/soba-ichi-cho/assets/index-DXnqIlA_.js"></script>
+  <link rel="stylesheet" crossorigin href="/soba-ichi-cho/assets/index-DRA_1oRb.css">
 </head>
 <body>
   <div id="app">
@@ -83,6 +83,14 @@
 
       <!-- 厨房・調理台エリア -->
       <section class="kitchen-section">
+        <!-- 盛り付け丼ステーション（客注文の真下に3列配置） -->
+        <div class="station-box bowl-station">
+          <div class="station-title">🍜 調理中どんぶり (タップして丼選択/提供)</div>
+          <div id="bowls-container" class="bowls-container">
+            <!-- どんぶり3つ -->
+          </div>
+        </div>
+
         <!-- 茹で釜ステーション -->
         <div class="station-box boil-station">
           <div class="station-title">♨️ 茹で釜（麺の茹で加減）</div>
@@ -123,14 +131,6 @@
                 <button class="btn-action btn-get" id="btn-get-hegi" disabled>丼へ盛る</button>
               </div>
             </div>
-          </div>
-        </div>
-
-        <!-- 盛り付け丼ステーション -->
-        <div class="station-box bowl-station">
-          <div class="station-title">🍜 調理中どんぶり (選択してトッピング/提供)</div>
-          <div id="bowls-container" class="bowls-container">
-            <!-- どんぶり3つ -->
           </div>
         </div>
 

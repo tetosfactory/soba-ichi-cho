@@ -1,4 +1,4 @@
-/* 昭和レトロ 立ち食い蕎麦屋ゲーム スタイルシート（モバイルファースト完全対応版） */
+/* 昭和レトロ 立ち食い蕎麦屋ゲーム スタイルシート（モバイルファースト縦流れ3列配置） */
 
 :root {
   --bg-dark: #1f140e;
@@ -226,7 +226,7 @@ button:active {
   gap: 4px;
 }
 
-/* カウンター＆客エリア（型崩れ完全ガード） */
+/* 1. 客カウンターエリア (3列) */
 .counter-section {
   background: linear-gradient(180deg, #442a17 0%, #29180c 100%);
   border: 2px solid var(--wood-light);
@@ -376,11 +376,10 @@ button:active {
   box-shadow: 0 2px 4px rgba(255,0,0,0.6);
 }
 
-/* 厨房エリア：上（茹で釜 + 丼）/ 下（食材） 2段レイアウト */
+/* 厨房エリア：縦並び (丼 3列 → 茹で釜 3列 → 食材 4x2列) */
 .kitchen-section {
-  display: grid;
-  grid-template-columns: 1.15fr 1fr;
-  grid-template-rows: auto auto;
+  display: flex;
+  flex-direction: column;
   gap: 4px;
   flex: 1;
   min-height: 0;
@@ -403,111 +402,26 @@ button:active {
   padding-bottom: 1px;
   margin-bottom: 2px;
   font-weight: bold;
+  text-align: center;
 }
 
-/* 茹で釜（上段・左） */
-.boil-station {
-  grid-column: 1;
-  grid-row: 1;
-}
-
-.pot-controls {
-  display: flex;
-  flex-direction: row;
-  gap: 3px;
-  flex: 1;
-}
-
-.pot-card {
-  background-color: rgba(0,0,0,0.3);
-  padding: 2px 3px;
-  border-radius: 4px;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  flex: 1;
-  min-width: 0;
-}
-
-.pot-label {
-  font-size: 0.62rem;
-  font-weight: bold;
-}
-
-.gauge-wrap {
-  width: 100%;
-  height: 6px;
-  background-color: #222;
-  border-radius: 3px;
-  position: relative;
-  overflow: hidden;
-  border: 1px solid #444;
-}
-
-.gauge-zone.perfect-zone {
-  position: absolute;
-  left: 70%;
-  width: 20%;
-  height: 100%;
-  background-color: rgba(76, 201, 240, 0.4);
-  border-left: 1px solid #4cc9f0;
-  border-right: 1px solid #4cc9f0;
-}
-
-.gauge-fill {
-  height: 100%;
-  width: 0%;
-  background: linear-gradient(90deg, #f72585 0%, #4cc9f0 100%);
-  transition: width 0.05s linear;
-}
-
-.pot-btns {
-  display: flex;
-  gap: 2px;
-}
-
-.btn-action {
-  flex: 1;
-  background: var(--wood-main);
-  color: #fff;
-  border: 1px solid var(--wood-light);
-  border-radius: 4px;
-  padding: 1px;
-  font-size: 0.65rem;
-  min-height: 26px;
-  height: 26px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.btn-get-perfect {
-  background: linear-gradient(180deg, #ffd166 0%, #f4a261 100%) !important;
-  color: #1a1a1a !important;
-  border-color: #fff !important;
-  font-weight: bold !important;
-}
-
-/* どんぶり（上段・右） */
+/* 2. 盛り付け丼ステーション（客注文の真下に横長3列で配置！） */
 .bowl-station {
-  grid-column: 2;
-  grid-row: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  flex: 0 0 auto;
 }
 
 .bowls-container {
-  display: flex;
-  justify-content: space-around;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+  justify-items: center;
   align-items: center;
-  gap: 3px;
   width: 100%;
 }
 
 .bowl-item {
-  width: 42px;
-  height: 42px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   border: 2px solid #555;
   background-color: #221a15;
@@ -517,6 +431,7 @@ button:active {
   justify-content: center;
   cursor: pointer;
   position: relative;
+  margin: 2px 0;
   box-shadow: 0 2px 4px rgba(0,0,0,0.5);
 }
 
@@ -568,11 +483,92 @@ button:active {
   color: var(--text-gold);
 }
 
-/* 食材・トッピング（下段・全幅：高さ縮小 ＆ 横並びアイコンカプセル） */
+/* 3. 茹で釜ステーション (横3列配置) */
+.boil-station {
+  flex: 0 0 auto;
+}
+
+.pot-controls {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+  width: 100%;
+}
+
+.pot-card {
+  background-color: rgba(0,0,0,0.3);
+  padding: 2px 3px;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.pot-label {
+  font-size: 0.62rem;
+  font-weight: bold;
+  text-align: center;
+}
+
+.gauge-wrap {
+  width: 100%;
+  height: 6px;
+  background-color: #222;
+  border-radius: 3px;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid #444;
+}
+
+.gauge-zone.perfect-zone {
+  position: absolute;
+  left: 70%;
+  width: 20%;
+  height: 100%;
+  background-color: rgba(76, 201, 240, 0.4);
+  border-left: 1px solid #4cc9f0;
+  border-right: 1px solid #4cc9f0;
+}
+
+.gauge-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #f72585 0%, #4cc9f0 100%);
+  transition: width 0.05s linear;
+}
+
+.pot-btns {
+  display: flex;
+  gap: 2px;
+}
+
+.btn-action {
+  flex: 1;
+  background: var(--wood-main);
+  color: #fff;
+  border: 1px solid var(--wood-light);
+  border-radius: 4px;
+  padding: 1px;
+  font-size: 0.68rem;
+  min-height: 26px;
+  height: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.btn-get-perfect {
+  background: linear-gradient(180deg, #ffd166 0%, #f4a261 100%) !important;
+  color: #1a1a1a !important;
+  border-color: #fff !important;
+  font-weight: bold !important;
+}
+
+/* 4. 食材・トッピング（最下段・余白を詰めた4×2コンパクト配置） */
 .ingredient-station {
-  grid-column: 1 / 3;
-  grid-row: 2;
+  flex: 1;
   min-height: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .ingredient-grid {
@@ -581,6 +577,7 @@ button:active {
   gap: 3px;
   flex: 1;
   min-height: 0;
+  align-content: center;
 }
 
 .ingredient-btn {
@@ -597,8 +594,9 @@ button:active {
   cursor: pointer;
   font-size: 0.68rem;
   font-weight: bold;
-  min-height: 32px;
   height: 34px;
+  max-height: 38px;
+  min-height: 30px;
 }
 
 .ingredient-btn span {
