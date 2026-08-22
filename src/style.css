@@ -1,4 +1,4 @@
-/* 昭和レトロ 立ち食い蕎麦屋ゲーム スタイルシート（モバイルファースト縦流れ3列配置） */
+/* 昭和レトロ 立ち食い蕎麦屋ゲーム スタイルシート（完璧レイアウト黄金バランス版） */
 
 :root {
   --bg-dark: #1f140e;
@@ -73,7 +73,7 @@ button:active {
 .game-header {
   background: linear-gradient(180deg, var(--wood-dark) 0%, var(--wood-border) 100%);
   border-bottom: 2px solid var(--accent-gold);
-  padding: 4px 6px;
+  padding: 4px 8px;
   display: flex;
   flex-direction: column;
   align-items: stretch;
@@ -90,7 +90,7 @@ button:active {
 
 .shop-sign h1 {
   font-family: var(--font-mincho);
-  font-size: 1.05rem;
+  font-size: 1.1rem;
   color: var(--text-gold);
   text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
   letter-spacing: 1px;
@@ -99,9 +99,9 @@ button:active {
 .lantern {
   background-color: var(--accent-red);
   color: #fff;
-  padding: 1px 5px;
+  padding: 1px 6px;
   border-radius: 12px;
-  font-size: 0.65rem;
+  font-size: 0.68rem;
   font-weight: bold;
   box-shadow: 0 0 6px rgba(184, 42, 36, 0.8);
 }
@@ -110,9 +110,9 @@ button:active {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 4px;
+  gap: 6px;
   background-color: rgba(0,0,0,0.4);
-  padding: 2px 4px;
+  padding: 3px 6px;
   border-radius: 6px;
   border: 1px solid var(--wood-light);
   flex-wrap: nowrap;
@@ -125,29 +125,29 @@ button:active {
 }
 
 .stat-label {
-  font-size: 0.6rem;
+  font-size: 0.62rem;
   color: #a08a75;
 }
 
 .stat-val {
-  font-size: 0.78rem;
+  font-size: 0.8rem;
   font-weight: bold;
   color: #fff;
 }
 
 .stat-val.highlight {
   color: var(--text-gold);
-  font-size: 0.82rem;
+  font-size: 0.85rem;
 }
 
 .stat-val.highlight-mode {
   color: #4cc9f0;
-  font-size: 0.75rem;
+  font-size: 0.78rem;
 }
 
 .rep-bar-container {
-  width: 38px;
-  height: 5px;
+  width: 42px;
+  height: 6px;
   background-color: #444;
   border-radius: 3px;
   overflow: hidden;
@@ -163,7 +163,7 @@ button:active {
 .btn-icon {
   background: transparent;
   border: none;
-  font-size: 1rem;
+  font-size: 1.05rem;
   cursor: pointer;
   padding: 1px;
 }
@@ -173,8 +173,8 @@ button:active {
   color: #fff;
   border: 1px solid #ff6b6b;
   border-radius: 4px;
-  padding: 2px 5px;
-  font-size: 0.68rem;
+  padding: 2px 6px;
+  font-size: 0.72rem;
   font-weight: bold;
   cursor: pointer;
 }
@@ -183,8 +183,8 @@ button:active {
 .menu-board {
   display: flex;
   justify-content: flex-start;
-  gap: 4px;
-  padding: 2px 6px;
+  gap: 6px;
+  padding: 3px 8px;
   background-color: var(--wood-main);
   border-bottom: 1px solid var(--wood-border);
   overflow-x: auto;
@@ -197,10 +197,10 @@ button:active {
   color: #2b170a;
   font-family: var(--font-mincho);
   font-weight: bold;
-  padding: 2px 5px;
+  padding: 2px 6px;
   border-radius: 3px;
   box-shadow: 1px 1px 2px rgba(0,0,0,0.4);
-  font-size: 0.68rem;
+  font-size: 0.72rem;
   flex-shrink: 0;
 }
 
@@ -223,15 +223,15 @@ button:active {
   min-height: 0;
   overflow: hidden;
   padding: 4px 6px;
-  gap: 4px;
+  gap: 6px;
 }
 
-/* 1. 客カウンターエリア (3列) */
+/* 1. 客カウンターエリア (見やすく拡大・型崩れ防止) */
 .counter-section {
   background: linear-gradient(180deg, #442a17 0%, #29180c 100%);
   border: 2px solid var(--wood-light);
   border-radius: 8px;
-  padding: 4px;
+  padding: 6px;
   position: relative;
   box-shadow: inset 0 0 10px rgba(0,0,0,0.6);
   flex: 0 0 auto;
@@ -240,21 +240,21 @@ button:active {
 .seats-container {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 4px;
+  gap: 6px;
 }
 
 .seat-slot {
-  background: rgba(0,0,0,0.25);
-  border: 1px dashed rgba(255,255,255,0.15);
+  background: rgba(0,0,0,0.3);
+  border: 1px dashed rgba(255,255,255,0.2);
   border-radius: 6px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
-  padding: 4px 2px;
+  padding: 4px;
   position: relative;
-  height: 125px;
-  max-height: 135px;
+  height: 145px;
+  max-height: 155px;
   overflow: hidden;
 }
 
@@ -270,25 +270,24 @@ button:active {
 
 .customer-speech {
   background: rgba(255, 255, 255, 0.95);
-  padding: 2px 3px;
+  padding: 3px 4px;
   border-radius: 6px;
   width: 100%;
   text-align: center;
-  margin-bottom: 1px;
+  margin-bottom: 2px;
   border: 1px solid var(--wood-dark);
-  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
-  max-height: 42px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  max-height: 52px;
   overflow: hidden;
 }
 
 .order-title {
   font-family: var(--font-mincho);
   font-weight: bold;
-  font-size: 0.68rem;
+  font-size: 0.72rem;
   color: var(--accent-red);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  line-height: 1.2;
+  word-break: break-all;
 }
 
 .order-quote {
@@ -296,24 +295,21 @@ button:active {
 }
 
 .recipe-hint {
-  font-size: 0.78rem;
+  font-size: 0.85rem;
   color: var(--accent-gold);
   margin-top: 1px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  line-height: 1.1;
+  line-height: 1.2;
 }
 
 .customer-avatar {
-  font-size: 1.8rem !important;
-  margin: 1px 0;
+  font-size: 2.1rem !important;
+  margin: 2px 0;
   line-height: 1;
   filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
 }
 
 .customer-name {
-  font-size: 0.65rem;
+  font-size: 0.68rem;
   color: var(--text-gold);
   white-space: nowrap;
   overflow: hidden;
@@ -321,11 +317,11 @@ button:active {
 }
 
 .patience-bar, .escape-bar {
-  width: 85%;
-  height: 4px;
+  width: 90%;
+  height: 5px;
   background-color: #333;
-  border-radius: 2px;
-  margin: 1px 0;
+  border-radius: 3px;
+  margin: 2px 0;
   overflow: hidden;
 }
 
@@ -346,11 +342,11 @@ button:active {
   border: 1px solid #fff;
   border-radius: 8px;
   font-weight: bold;
-  font-size: 0.72rem;
+  font-size: 0.78rem;
   padding: 2px;
   width: 100%;
-  min-height: 28px;
-  height: 30px;
+  min-height: 32px;
+  height: 34px;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -364,11 +360,11 @@ button:active {
   border: 1px solid #fff;
   border-radius: 8px;
   font-weight: bold;
-  font-size: 0.72rem;
+  font-size: 0.78rem;
   padding: 2px;
   width: 100%;
-  min-height: 28px;
-  height: 30px;
+  min-height: 32px;
+  height: 34px;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -376,36 +372,37 @@ button:active {
   box-shadow: 0 2px 4px rgba(255,0,0,0.6);
 }
 
-/* 厨房エリア：縦並び (丼 3列 → 茹で釜 3列 → 食材 4x2列) */
+/* 厨房エリア：縦並び (丼 3列 ➔ 茹で釜 3列 ➔ 食材 4x2列) */
 .kitchen-section {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
   flex: 1;
   min-height: 0;
   overflow: hidden;
+  justify-content: space-between;
 }
 
 .station-box {
   background-color: var(--wood-dark);
   border: 1px solid var(--wood-light);
   border-radius: 6px;
-  padding: 3px 4px;
+  padding: 5px 6px;
   display: flex;
   flex-direction: column;
 }
 
 .station-title {
-  font-size: 0.65rem;
+  font-size: 0.7rem;
   color: var(--text-gold);
   border-bottom: 1px solid var(--wood-light);
-  padding-bottom: 1px;
-  margin-bottom: 2px;
+  padding-bottom: 2px;
+  margin-bottom: 3px;
   font-weight: bold;
   text-align: center;
 }
 
-/* 2. 盛り付け丼ステーション（客注文の真下に横長3列で配置！） */
+/* 2. 盛り付け丼ステーション（客注文の真下に横長3列で拡大配置！） */
 .bowl-station {
   flex: 0 0 auto;
 }
@@ -413,17 +410,17 @@ button:active {
 .bowls-container {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 4px;
+  gap: 6px;
   justify-items: center;
   align-items: center;
   width: 100%;
 }
 
 .bowl-item {
-  width: 44px;
-  height: 44px;
+  width: 52px;
+  height: 52px;
   border-radius: 50%;
-  border: 2px solid #555;
+  border: 2px solid #666;
   background-color: #221a15;
   display: flex;
   flex-direction: column;
@@ -432,13 +429,13 @@ button:active {
   cursor: pointer;
   position: relative;
   margin: 2px 0;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.6);
 }
 
 .bowl-item.selected {
   border-color: var(--accent-gold);
-  box-shadow: 0 0 8px var(--accent-gold);
-  transform: scale(1.05);
+  box-shadow: 0 0 10px var(--accent-gold);
+  transform: scale(1.06);
 }
 
 .bowl-soup-fill {
@@ -461,7 +458,7 @@ button:active {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.6rem;
+  font-size: 0.65rem;
   font-weight: bold;
   color: #fff;
   text-shadow: 1px 1px 2px #000;
@@ -471,19 +468,20 @@ button:active {
   position: absolute;
   top: 4px;
   z-index: 3;
-  font-size: 0.9rem;
+  font-size: 1rem;
   display: flex;
   gap: 1px;
 }
 
 .bowl-select-tag {
   position: absolute;
-  bottom: -11px;
-  font-size: 0.58rem;
+  bottom: -12px;
+  font-size: 0.62rem;
   color: var(--text-gold);
+  font-weight: bold;
 }
 
-/* 3. 茹で釜ステーション (横3列配置) */
+/* 3. 茹で釜ステーション (横3列拡大表示・メーターを鮮明化) */
 .boil-station {
   flex: 0 0 auto;
 }
@@ -491,33 +489,34 @@ button:active {
 .pot-controls {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 4px;
+  gap: 6px;
   width: 100%;
 }
 
 .pot-card {
-  background-color: rgba(0,0,0,0.3);
-  padding: 2px 3px;
+  background-color: rgba(0,0,0,0.35);
+  padding: 4px;
   border-radius: 4px;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 3px;
+  border: 1px solid rgba(255,255,255,0.08);
 }
 
 .pot-label {
-  font-size: 0.62rem;
+  font-size: 0.7rem;
   font-weight: bold;
   text-align: center;
 }
 
 .gauge-wrap {
   width: 100%;
-  height: 6px;
+  height: 9px;
   background-color: #222;
-  border-radius: 3px;
+  border-radius: 4px;
   position: relative;
   overflow: hidden;
-  border: 1px solid #444;
+  border: 1px solid #555;
 }
 
 .gauge-zone.perfect-zone {
@@ -525,7 +524,7 @@ button:active {
   left: 70%;
   width: 20%;
   height: 100%;
-  background-color: rgba(76, 201, 240, 0.4);
+  background-color: rgba(76, 201, 240, 0.45);
   border-left: 1px solid #4cc9f0;
   border-right: 1px solid #4cc9f0;
 }
@@ -548,10 +547,10 @@ button:active {
   color: #fff;
   border: 1px solid var(--wood-light);
   border-radius: 4px;
-  padding: 1px;
-  font-size: 0.68rem;
-  min-height: 26px;
-  height: 28px;
+  padding: 2px;
+  font-size: 0.72rem;
+  min-height: 30px;
+  height: 32px;
   font-weight: bold;
   cursor: pointer;
 }
@@ -563,40 +562,36 @@ button:active {
   font-weight: bold !important;
 }
 
-/* 4. 食材・トッピング（最下段・余白を詰めた4×2コンパクト配置） */
+/* 4. 食材・トッピング（余白を詰め、ボタンを拡大してバランスを完成） */
 .ingredient-station {
-  flex: 1;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
+  flex: 0 0 auto;
+  margin-top: auto;
 }
 
 .ingredient-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 3px;
-  flex: 1;
-  min-height: 0;
-  align-content: center;
+  gap: 4px;
+  width: 100%;
 }
 
 .ingredient-btn {
   background-color: var(--wood-main);
   border: 1px solid var(--wood-light);
-  border-radius: 5px;
+  border-radius: 6px;
   color: #fff;
-  padding: 2px 3px;
+  padding: 4px;
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  gap: 3px;
+  gap: 4px;
   cursor: pointer;
-  font-size: 0.68rem;
+  font-size: 0.72rem;
   font-weight: bold;
-  height: 34px;
-  max-height: 38px;
-  min-height: 30px;
+  height: 42px;
+  min-height: 40px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
 
 .ingredient-btn span {
@@ -606,8 +601,8 @@ button:active {
 }
 
 .soup-icon {
-  width: 13px;
-  height: 13px;
+  width: 15px;
+  height: 15px;
   border-radius: 50%;
   border: 1px solid #fff;
   flex-shrink: 0;
@@ -617,7 +612,7 @@ button:active {
 .soup-icon.niboshi-icon { background-color: #687885; }
 
 .top-icon {
-  font-size: 0.88rem;
+  font-size: 1rem;
   flex-shrink: 0;
 }
 
