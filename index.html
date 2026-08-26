@@ -24,9 +24,9 @@
     <!-- レトロ看板＆ステータスバー -->
     <header class="game-header">
       <div class="shop-sign">
-        <div class="lantern left">🏮 蕎麦</div>
+        <span class="lantern left">🏮 蕎麦</span>
         <h1 id="app-title">そば一丁！</h1>
-        <div class="lantern right">🏮 営業中</div>
+        <span class="lantern right">🏮 営業中</span>
       </div>
       <div class="status-panel">
         <div class="stat-item">
@@ -34,41 +34,25 @@
           <span id="stat-mode" class="stat-val highlight-mode">かんたん</span>
         </div>
         <div class="stat-item">
-          <span class="stat-label">レベル</span>
-          <span id="stat-level" class="stat-val highlight-level">Lv.1</span>
-        </div>
-        <div class="stat-item">
-          <span class="stat-label">ステージ</span>
-          <span id="stat-day" class="stat-val">第 1 ステージ</span>
+          <span class="stat-label">日数</span>
+          <span id="stat-day" class="stat-val">1日目</span>
         </div>
         <div class="stat-item">
           <span class="stat-label">残り時間</span>
-          <span id="stat-time" class="stat-val highlight">90 秒</span>
+          <span id="stat-time" class="stat-val highlight">90秒</span>
         </div>
         <div class="stat-item">
           <span class="stat-label">売上 / 目標</span>
-          <span id="stat-score" class="stat-val">0円 / 10000円</span>
+          <span id="stat-score" class="stat-val">0 / 10,000円</span>
         </div>
         <div class="stat-item">
-          <span class="stat-label">店の評判</span>
-          <div class="rep-bar-container">
-            <div id="rep-bar-fill" class="rep-bar-fill" style="width: 100%;"></div>
-          </div>
-          <span id="stat-rep" class="stat-sub">100%</span>
+          <span class="stat-label">評判</span>
+          <span id="stat-rep" class="stat-val">100%</span>
         </div>
         <button id="btn-sound-toggle" class="btn-icon" title="音量切替">🔊</button>
-        <button id="btn-quit-game" class="btn-quit" title="ゲームをやめる">🚪 やめる</button>
+        <button id="btn-quit-game" class="btn-quit" title="やめる">🚪</button>
       </div>
     </header>
-
-    <!-- お品書き（壁掛け札） -->
-    <div class="menu-board">
-      <div class="menu-tag">かけそば <small>350円</small></div>
-      <div class="menu-tag">ネギそば <small>400円</small></div>
-      <div class="menu-tag highlight-tag">月見そば <small>450円</small></div>
-      <div class="menu-tag level2-tag level2-locked" id="menu-tag-korokke">🔒 ？？？そば <small>第2ステージ</small></div>
-      <div class="menu-tag notice-tag">⚠️ 立食い師無銭飲食警戒中</div>
-    </div>
 
     <main class="game-viewport">
       <!-- 客カウンターエリア -->
@@ -103,7 +87,7 @@
               </div>
               <div class="pot-btns">
                 <button class="btn-action" id="btn-boil-nihachi">茹でる</button>
-                <button class="btn-action btn-get" id="btn-get-nihachi" disabled>丼へ盛る</button>
+                <button class="btn-action btn-get" id="btn-get-nihachi" disabled>盛る</button>
               </div>
             </div>
             <!-- 十割そば -->
@@ -115,19 +99,19 @@
               </div>
               <div class="pot-btns">
                 <button class="btn-action" id="btn-boil-juwari">茹でる</button>
-                <button class="btn-action btn-get" id="btn-get-juwari" disabled>丼へ盛る</button>
+                <button class="btn-action btn-get" id="btn-get-juwari" disabled>盛る</button>
               </div>
             </div>
             <!-- へぎ蕎麦 (Lv.2解放) -->
             <div class="pot-card level2-locked" id="pot-hegi">
-              <span class="pot-label" id="pot-hegi-label">🔒 ？？？ <small>(第2ステージ)</small></span>
+              <span class="pot-label" id="pot-hegi-label">🔒 ？？？</span>
               <div class="gauge-wrap">
                 <div class="gauge-zone perfect-zone"></div>
                 <div class="gauge-fill" id="pot-hegi-fill"></div>
               </div>
               <div class="pot-btns">
                 <button class="btn-action" id="btn-boil-hegi" disabled>茹でる</button>
-                <button class="btn-action btn-get" id="btn-get-hegi" disabled>丼へ盛る</button>
+                <button class="btn-action btn-get" id="btn-get-hegi" disabled>盛る</button>
               </div>
             </div>
           </div>
@@ -147,12 +131,12 @@
             </button>
             <button class="ingredient-btn dashi-btn level2-locked" id="btn-dashi-kombu" disabled>
               <div class="soup-icon" id="icon-dashi-kombu">🔒</div>
-              <span id="text-dashi-kombu">🔒 ？？？ <small>(第2ステージ)</small></span>
+              <span id="text-dashi-kombu">🔒 ？？？</span>
             </button>
 
             <button class="ingredient-btn topping-btn" id="btn-top-negi">
               <span class="top-icon">🥬</span>
-              <span>刻みネギ</span>
+              <span>ネギ</span>
             </button>
             <button class="ingredient-btn topping-btn" id="btn-top-egg">
               <span class="top-icon">🥚</span>
@@ -160,17 +144,17 @@
             </button>
             <button class="ingredient-btn topping-btn level2-locked" id="btn-top-korokke" disabled>
               <span class="top-icon" id="icon-top-korokke">🔒</span>
-              <span id="text-top-korokke">🔒 ？？？ <small>(第2ステージ)</small></span>
+              <span id="text-top-korokke">🔒 ？？？</span>
             </button>
 
             <!-- 隠し/特殊トッピング：激辛七味 -->
-            <button class="ingredient-btn secret-btn" id="btn-top-chili" title="対・立食い師専用トラップ">
+            <button class="ingredient-btn secret-btn" id="btn-top-chili" title="対・立食い師＆辛党用">
               <span class="top-icon">🌶️</span>
               <span>激辛七味</span>
             </button>
-            <button class="ingredient-btn trash-btn" id="btn-trash">
+            <button class="ingredient-btn trash-btn" id="btn-trash" title="丼をリセット">
               <span class="top-icon">🗑️</span>
-              <span>捨ててやり直す</span>
+              <span>破棄</span>
             </button>
           </div>
         </div>

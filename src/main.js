@@ -231,10 +231,9 @@ document.addEventListener('DOMContentLoaded', () => {
       // ヘッダー情報
       const isEndless = game.stage >= 3;
       if (statMode) statMode.textContent = diffNames[game.difficulty] || 'かんたん';
-      if (statLevel) statLevel.textContent = `Lv.${game.level}`;
-      if (statDay) statDay.textContent = isEndless ? `${game.day}日目 (エンドレス)` : `${game.day}日目 (第${game.stage}ステージ)`;
-      if (statTime) statTime.textContent = `${game.timeRemaining} 秒`;
-      if (statScore) statScore.textContent = isEndless ? `${game.score.toLocaleString()}円 (エンドレス)` : `${game.score.toLocaleString()}円 / ${game.targetScore.toLocaleString()}円`;
+      if (statDay) statDay.textContent = isEndless ? `${game.day}日目(∞)` : `${game.day}日目(第${game.stage})`;
+      if (statTime) statTime.textContent = `${game.timeRemaining}秒`;
+      if (statScore) statScore.textContent = isEndless ? `${game.score.toLocaleString()}円` : `${game.score.toLocaleString()} / ${game.targetScore.toLocaleString()}円`;
       if (statRep) statRep.textContent = `${game.repScore}%`;
       if (repBarFill) repBarFill.style.width = `${game.repScore}%`;
 
@@ -246,7 +245,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (btnBoilHegi) btnBoilHegi.disabled = !isL2;
       const potHegiLabel = document.getElementById('pot-hegi-label');
       if (potHegiLabel) {
-        potHegiLabel.innerHTML = isL2 ? 'へぎ蕎麦 <small>(Lv.2)</small>' : '🔒 ？？？ <small>(第2ステージ)</small>';
+        potHegiLabel.innerHTML = isL2 ? 'へぎ蕎麦 <small>(Lv.2)</small>' : '🔒 ？？？';
       }
 
       // こんぶ出汁
@@ -260,7 +259,7 @@ document.addEventListener('DOMContentLoaded', () => {
           iconEl.textContent = isL2 ? '' : '🔒';
         }
         if (textEl) {
-          textEl.innerHTML = isL2 ? 'こんぶ出汁 <small>(Lv.2)</small>' : '🔒 ？？？ <small>(第2ステージ)</small>';
+          textEl.innerHTML = isL2 ? 'こんぶ出汁' : '🔒 ？？？';
         }
       }
 
@@ -274,14 +273,8 @@ document.addEventListener('DOMContentLoaded', () => {
           iconEl.textContent = isL2 ? '🧆' : '🔒';
         }
         if (textEl) {
-          textEl.innerHTML = isL2 ? 'コロッケ <small>(Lv.2)</small>' : '🔒 ？？？ <small>(第2ステージ)</small>';
+          textEl.innerHTML = isL2 ? 'コロッケ' : '🔒 ？？？';
         }
-      }
-
-      // お品書き（壁札）
-      if (menuTagKorokke) {
-        menuTagKorokke.classList.toggle('level2-locked', !isL2);
-        menuTagKorokke.innerHTML = isL2 ? 'コロッケそば <small>500円</small>' : '🔒 ？？？そば <small>第2ステージ</small>';
       }
 
       // 茹で釜ゲージとボタン状態更新（二八 / 十割 / へぎ）
@@ -335,14 +328,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
           if (customer.state === 'waiting') {
             const pct = Math.max(0, (customer.patience / customer.maxPatience) * 100);
-            const spicyTagHtml = customer.isSpicyLover ? '<span class="spicy-tag">🌶️ 刺激求む</span>' : '';
-            const spicyQuoteHtml = customer.isSpicyLover ? `<div class="spicy-quote">💬 「${customer.quote}」</div>` : '';
+            const spicyTagHtml = customer.isSpicyLover ? '<span class="spicy-tag">🌶️ 辛党</span>' : '';
+            const spicyQuoteHtml = customer.isSpicyLover ? `<div class="spicy-quote">💬 刺激的な辛さ求む！</div>` : '';
 
             cardEl.innerHTML = `
               <div class="customer-speech">
-                <div class="order-title">${customer.getOrderName()}</div>
-                ${spicyQuoteHtml}
                 <div class="recipe-hint">${customer.getRecipeIcons()}</div>
+                ${spicyQuoteHtml}
               </div>
               <div class="customer-avatar">${customer.avatar}</div>
               <div class="customer-name">${customer.name} ${spicyTagHtml}</div>
