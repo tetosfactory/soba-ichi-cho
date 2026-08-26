@@ -157,23 +157,20 @@ export class Customer {
 
   getRecipeIcons() {
     const dashiLabel   = DASHI_TYPES[this.order.dashi]
-      ? `🥣${DASHI_TYPES[this.order.dashi].name.replace('出汁', '')}`
+      ? `🥣 ${DASHI_TYPES[this.order.dashi].name.replace('出汁', '')}出汁`
       : '?';
     const noodleLabel  = NOODLE_TYPES[this.order.noodle]
-      ? `🍜${NOODLE_TYPES[this.order.noodle].name}`
+      ? `🍜 ${NOODLE_TYPES[this.order.noodle].name}`
       : '?';
     const cleanTops    = this.order.toppings.filter(t => t !== 'spicy_chili');
-    let toppingLabels  = cleanTops.map(t => TOPPING_TYPES[t].icon + TOPPING_TYPES[t].name).join(' ');
-    if (!toppingLabels) toppingLabels = '具なし';
+    const toppingLabels = cleanTops.length > 0
+      ? cleanTops.map(t => TOPPING_TYPES[t].icon + ' ' + TOPPING_TYPES[t].name).join('・')
+      : '具なし';
 
     return `
-      <div class="recipe-row main-recipe">
-        <span class="recipe-badge noodle-badge">${noodleLabel}</span>
-        <span class="recipe-badge dashi-badge">${dashiLabel}</span>
-      </div>
-      <div class="recipe-row sub-recipe">
-        <span class="recipe-badge topping-badge">${toppingLabels}</span>
-      </div>
+      <span class="recipe-badge noodle-badge">${noodleLabel}</span>
+      <span class="recipe-badge dashi-badge">${dashiLabel}</span>
+      <span class="recipe-badge topping-badge">${toppingLabels}</span>
     `;
   }
 
