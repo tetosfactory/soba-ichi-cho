@@ -105,9 +105,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const saveData = game.loadProgress();
     if (saveData && btnContinueGame) {
       btnContinueGame.classList.remove('hidden');
-      const stageNum = saveData.stage || 1;
+      const stageText = (saveData.stage >= 3) ? 'エンドレス営業' : `第${saveData.stage || 1}ステージ`;
       const dayNum = saveData.day || 1;
-      btnContinueGame.textContent = `▶️ 続きから始める (${dayNum}日目 / 第${stageNum}ステージ / 売上${saveData.score}円)`;
+      btnContinueGame.textContent = `▶️ 続きから始める (${dayNum}日目 / ${stageText} / 売上${saveData.score.toLocaleString()}円)`;
     } else if (btnContinueGame) {
       btnContinueGame.classList.add('hidden');
     }
@@ -147,7 +147,10 @@ document.addEventListener('DOMContentLoaded', () => {
       if (currentModalMode === 'goal_reached') {
         currentModalMode = 'playing';
         game.startStage2();
-      } else if (currentModalMode === 'day_clear' || currentModalMode === 'stage2_clear') {
+      } else if (currentModalMode === 'stage2_clear') {
+        currentModalMode = 'playing';
+        game.startEndless();
+      } else if (currentModalMode === 'day_clear') {
         currentModalMode = 'playing';
         game.startNextDay();
       } else {
@@ -205,11 +208,12 @@ document.addEventListener('DOMContentLoaded', () => {
   function render(game) {
     try {
       // ヘッダー情報
+      const isEndless = game.stage >= 3;
       if (statMode) statMode.textContent = diffNames[game.difficulty] || 'かんたん';
       if (statLevel) statLevel.textContent = `Lv.${game.level}`;
-      if (statDay) statDay.textContent = `${game.day}日目 (第${game.stage}ステージ)`;
+      if (statDay) statDay.textContent = isEndless ? `${game.day}日目 (エンドレス)` : `${game.day}日目 (第${game.stage}ステージ)`;
       if (statTime) statTime.textContent = `${game.timeRemaining} 秒`;
-      if (statScore) statScore.textContent = `${game.score.toLocaleString()}円 / ${game.targetScore.toLocaleString()}円`;
+      if (statScore) statScore.textContent = isEndless ? `${game.score.toLocaleString()}円 (エンドレス)` : `${game.score.toLocaleString()}円 / ${game.targetScore.toLocaleString()}円`;
       if (statRep) statRep.textContent = `${game.repScore}%`;
       if (repBarFill) repBarFill.style.width = `${game.repScore}%`;
 
@@ -572,11 +576,15 @@ document.addEventListener('DOMContentLoaded', () => {
       sound.playFanfare();
       confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
 
+      const isEndless = game.stage >= 3;
+      const stageName = isEndless ? 'エンドレス営業' : `第${game.stage}ステージ`;
+      const scoreSub = isEndless ? '' : ` (目標: ${game.targetScore.toLocaleString()}円)`;
+
       modalTitle.textContent = `🎉 ${game.day}日目 営業クリア！ 🎉`;
       modalBody.innerHTML = `
         <div class="result-box success">
-          <h3>本日の営業成果 (${game.day}日目 / 第${game.stage}ステージ)</h3>
-          <p class="score-result">現在の累計売上: <span>${game.score}円</span> (目標: ${game.targetScore}円)</p>
+          <h3>本日の営業成果 (${game.day}日目 / ${stageName})</h3>
+          <p class="score-result">現在の累計売上: <span>${game.score.toLocaleString()}円</span>${scoreSub}</p>
           <p>評判度: <b>${game.repScore}%</b> | 提供客数: ${game.stats.servedCount} 人</p>
           <p>立食い師撃退数: ${game.stats.ginjiDefeated} 人</p>
           <p class="comment">
@@ -595,7 +603,7 @@ document.addEventListener('DOMContentLoaded', () => {
       modalBody.innerHTML = `
         <div class="result-box fail">
           <h3>本日の結果 (${game.day}日目)</h3>
-          <p class="score-result">最終売上: <span>${game.score}円</span> (目標 ${game.targetScore}円)</p>
+          <p class="score-result">最終売上: <span>${game.score.toLocaleString()}円</span></p>
           <p>最終評判: ${game.repScore}%</p>
           <p class="comment">売上がないか、評判失墜で店を畳むことになってしまった…</p>
         </div>

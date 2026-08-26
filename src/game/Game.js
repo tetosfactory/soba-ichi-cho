@@ -138,6 +138,15 @@ export class SobaGame {
     this._startSession();
   }
 
+  /** エンドレス営業開始（第2ステージクリア後） */
+  startEndless() {
+    this.stage = 3;
+    this.level = 2;
+    this.day++;
+    this.level2UnlockedNotified = true;
+    this._startSession();
+  }
+
   /** 内部: 1日分のセッション開始（タイマーリセット含む） */
   _startSession() {
     if (this.stage === 1) {
@@ -146,8 +155,15 @@ export class SobaGame {
       if      (this.difficulty === 'easy')   this.timeRemaining = 120;
       else if (this.difficulty === 'normal') this.timeRemaining = 90;
       else                                   this.timeRemaining = 75;
-    } else {
+    } else if (this.stage === 2) {
       this.targetScore = 20000;
+      this.level = 2;
+      if      (this.difficulty === 'easy')   this.timeRemaining = 150;
+      else if (this.difficulty === 'normal') this.timeRemaining = 120;
+      else                                   this.timeRemaining = 90;
+    } else {
+      // stage >= 3 (エンドレス営業)
+      this.targetScore = Infinity;
       this.level = 2;
       if      (this.difficulty === 'easy')   this.timeRemaining = 150;
       else if (this.difficulty === 'normal') this.timeRemaining = 120;
@@ -376,13 +392,13 @@ export class SobaGame {
     this.ui.onGameStateChange(this);
   }
 
-  /** 第2ステージ クリア（目標2万円達成） */
+  /** 第2ステージ クリア（目標2万円達成＆エンディング） */
   _triggerStage2Clear() {
     this._stopTimers();
     sound.stopBGM();
 
-    // セーブ: 翌日への継続営業用として保存
-    this.saveProgress({ day: this.day + 1 });
+    // セーブ: 次回継続時は「stage: 3 (エンドレス)」として保存
+    this.saveProgress({ stage: 3, level: 2, day: this.day + 1 });
 
     // 盤面をクリア
     this.customers = [null, null, null];
