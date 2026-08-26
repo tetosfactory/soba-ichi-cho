@@ -55,7 +55,7 @@ export class SobaGame {
 
   // ─── セーブ / ロード ────────────────────────────────────────────
 
-  saveProgress() {
+  saveProgress(customData = null) {
     const saveData = {
       day:        this.day,
       stage:      this.stage,
@@ -64,7 +64,8 @@ export class SobaGame {
       score:      this.score,
       repScore:   this.repScore,
       stats:      { ...this.stats },
-      savedAt:    Date.now()
+      savedAt:    Date.now(),
+      ...customData
     };
     try {
       localStorage.setItem('soba_game_autosave', JSON.stringify(saveData));
@@ -132,6 +133,7 @@ export class SobaGame {
   startStage2() {
     this.stage = 2;
     this.level = 2;
+    this.day++;
     this.level2UnlockedNotified = true;
     this._startSession();
   }
@@ -140,11 +142,13 @@ export class SobaGame {
   _startSession() {
     if (this.stage === 1) {
       this.targetScore = 10000;
+      this.level = 1;
       if      (this.difficulty === 'easy')   this.timeRemaining = 120;
       else if (this.difficulty === 'normal') this.timeRemaining = 90;
       else                                   this.timeRemaining = 75;
     } else {
       this.targetScore = 20000;
+      this.level = 2;
       if      (this.difficulty === 'easy')   this.timeRemaining = 150;
       else if (this.difficulty === 'normal') this.timeRemaining = 120;
       else                                   this.timeRemaining = 90;
@@ -340,7 +344,7 @@ export class SobaGame {
 
   /**
    * 売上加算のたびに呼び出す。
-   * 1万円（第1ステージ）に達したらゲームを即停止。
+   * 1万円（第1ステージ）または2万円（第2ステージ）に達したらゲームを即停止。
    * @returns {boolean} 目標達成してゲームを止めたらtrue
    */
   checkScoreGoal() {
@@ -349,7 +353,7 @@ export class SobaGame {
     if (this.stage === 1 && this.score >= 10000) {
       this._triggerGoalReached();
       return true;
-    } else if (this.stage === 2 && this.score >= this.targetScore) {
+    } else if (this.stage === 2 && this.score >= 20000) {
       this._triggerStage2Clear();
       return true;
     }
@@ -361,26 +365,31 @@ export class SobaGame {
     this._stopTimers();
     sound.stopBGM();
 
-    // セーブ: stage=2, day=次の日として保存（続けるボタンで第2ステージへ）
-    const savedDay = this.day;
-    this.stage = 2;
-    this.day++;
-    this.level = 2;
-    this.level2UnlockedNotified = true;
-    this.saveProgress();
-    // ポップアップ表示用に元に戻す
-    this.stage = 1;
-    this.day = savedDay;
+    // セーブ: stage=2, level=2, day=翌日として保存（次回再開や続けるボタンで第2ステージへ）
+    this.saveProgress({ stage: 2, level: 2, day: this.day + 1 });
+
+    // 盤面をクリア
+    this.customers = [null, null, null];
+    this.bowls.forEach(b => b.clear());
 
     if (this.ui.onGoalReached) this.ui.onGoalReached(this);
+    this.ui.onGameStateChange(this);
   }
 
-  /** 第2ステージ クリア */
+  /** 第2ステージ クリア（目標2万円達成） */
   _triggerStage2Clear() {
     this._stopTimers();
     sound.stopBGM();
-    this.saveProgress();
+
+    // セーブ: 翌日への継続営業用として保存
+    this.saveProgress({ day: this.day + 1 });
+
+    // 盤面をクリア
+    this.customers = [null, null, null];
+    this.bowls.forEach(b => b.clear());
+
     if (this.ui.onStage2Clear) this.ui.onStage2Clear(this);
+    this.ui.onGameStateChange(this);
   }
 
   _stopTimers() {
@@ -520,15 +529,27 @@ export class SobaGame {
     this._stopTimers();
     sound.stopBGM();
 
+    // タイム切れ時点でも目標金額に達していれば目標達成処理を優先
+    if (this.stage === 1 && this.score >= 10000) {
+      this._triggerGoalReached();
+      return;
+    } else if (this.stage === 2 && this.score >= 20000) {
+      this._triggerStage2Clear();
+      return;
+    }
+
     const isSuccess = this.score > 0 && this.repScore > 0;
 
     if (isSuccess) {
-      // 翌日の状態としてオートセーブ
-      this.day++;
-      this.saveProgress();
-      this.day--; // ポップアップ表示用に一時的に戻す
+      // 翌日の状態としてオートセーブ（dayを+1して保存）
+      this.saveProgress({ day: this.day + 1 });
     }
 
+    // 盤面をクリア
+    this.customers = [null, null, null];
+    this.bowls.forEach(b => b.clear());
+
     this.ui.onGameOver(isSuccess, this);
+    this.ui.onGameStateChange(this);
   }
 }

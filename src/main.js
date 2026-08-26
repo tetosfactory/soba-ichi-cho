@@ -207,9 +207,9 @@ document.addEventListener('DOMContentLoaded', () => {
       // ヘッダー情報
       if (statMode) statMode.textContent = diffNames[game.difficulty] || 'かんたん';
       if (statLevel) statLevel.textContent = `Lv.${game.level}`;
-      if (statDay) statDay.textContent = `第 ${game.stage} ステージ`;
+      if (statDay) statDay.textContent = `${game.day}日目 (第${game.stage}ステージ)`;
       if (statTime) statTime.textContent = `${game.timeRemaining} 秒`;
-      if (statScore) statScore.textContent = `${game.score}円 / ${game.targetScore}円`;
+      if (statScore) statScore.textContent = `${game.score.toLocaleString()}円 / ${game.targetScore.toLocaleString()}円`;
       if (statRep) statRep.textContent = `${game.repScore}%`;
       if (repBarFill) repBarFill.style.width = `${game.repScore}%`;
 
