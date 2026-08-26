@@ -810,12 +810,33 @@ button:active {
 .ogin-card { border: 1px solid #e63946 !important; background: rgba(230, 57, 70, 0.15) !important; border-radius: 6px; }
 
 .level2-locked {
-  opacity: 0.4;
-  filter: grayscale(0.8);
-  pointer-events: none;
+  background: rgba(20, 15, 12, 0.7) !important;
+  border: 1px dashed rgba(212, 163, 89, 0.5) !important;
+  color: #aaa !important;
+  position: relative;
+  cursor: not-allowed;
 }
 
-.level2-tag { border-color: #e76f51 !important; color: #f4a261 !important; }
+.level2-locked .soup-icon,
+.level2-locked .top-icon {
+  font-size: 1.1rem;
+  background: transparent !important;
+}
+
+.pot-card.level2-locked {
+  background: rgba(20, 15, 12, 0.8) !important;
+  border: 1px dashed rgba(212, 163, 89, 0.4) !important;
+}
+
+.pot-card.level2-locked .gauge-wrap {
+  opacity: 0.25;
+}
+
+.level2-tag.level2-locked {
+  background: rgba(30, 20, 15, 0.6) !important;
+  border: 1px dashed rgba(212, 163, 89, 0.5) !important;
+  color: #bbb !important;
+}
 
 /* 🏆 エンディング画面スタイル */
 .ending-box {

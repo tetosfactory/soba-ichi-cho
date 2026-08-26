@@ -181,11 +181,23 @@ document.addEventListener('DOMContentLoaded', () => {
   // 調理アクション
   btnDashiKatsuo.addEventListener('click',  () => game.addDashi('katsuo'));
   btnDashiNiboshi.addEventListener('click', () => game.addDashi('niboshi'));
-  btnDashiKombu.addEventListener('click',   () => game.addDashi('kombu'));
+  btnDashiKombu.addEventListener('click',   () => {
+    if (game.level < 2) {
+      showToastMessage('🔒 こんぶ出汁は第2ステージ（目標1万円達成後）で解放されます！', 'warning');
+      return;
+    }
+    game.addDashi('kombu');
+  });
 
   btnTopNegi.addEventListener('click',     () => game.addTopping('negi'));
   btnTopEgg.addEventListener('click',      () => game.addTopping('raw_egg'));
-  btnTopKorokke.addEventListener('click',  () => game.addTopping('korokke'));
+  btnTopKorokke.addEventListener('click',  () => {
+    if (game.level < 2) {
+      showToastMessage('🔒 コロッケは第2ステージ（目標1万円達成後）で解放されます！', 'warning');
+      return;
+    }
+    game.addTopping('korokke');
+  });
   btnTopChili.addEventListener('click',    () => game.addTopping('spicy_chili'));
   btnTrash.addEventListener('click',       () => game.discardBowl());
 
@@ -195,8 +207,17 @@ document.addEventListener('DOMContentLoaded', () => {
   btnBoilJuwari.addEventListener('click',  () => game.boilNoodle('juwari'));
   btnGetJuwari.addEventListener('click',   () => game.addNoodleToBowl('juwari'));
 
-  btnBoilHegi.addEventListener('click',    () => game.boilNoodle('hegi'));
-  btnGetHegi.addEventListener('click',     () => game.addNoodleToBowl('hegi'));
+  btnBoilHegi.addEventListener('click',    () => {
+    if (game.level < 2) {
+      showToastMessage('🔒 へぎ蕎麦は第2ステージ（目標1万円達成後）で解放されます！', 'warning');
+      return;
+    }
+    game.boilNoodle('hegi');
+  });
+  btnGetHegi.addEventListener('click',     () => {
+    if (game.level < 2) return;
+    game.addNoodleToBowl('hegi');
+  });
 
   const diffNames = {
     easy: 'かんたん',
@@ -217,21 +238,50 @@ document.addEventListener('DOMContentLoaded', () => {
       if (statRep) statRep.textContent = `${game.repScore}%`;
       if (repBarFill) repBarFill.style.width = `${game.repScore}%`;
 
-      // レベル2解放状態のUI切り替え
+      // レベル2解放状態のUI切り替え（伏せ字 ↔ 解放）
       const isL2 = game.level >= 2;
+
+      // へぎ蕎麦（茹で釜）
       if (potHegiEl) potHegiEl.classList.toggle('level2-locked', !isL2);
       if (btnBoilHegi) btnBoilHegi.disabled = !isL2;
+      const potHegiLabel = document.getElementById('pot-hegi-label');
+      if (potHegiLabel) {
+        potHegiLabel.innerHTML = isL2 ? 'へぎ蕎麦 <small>(Lv.2)</small>' : '🔒 ？？？ <small>(第2ステージ)</small>';
+      }
+
+      // こんぶ出汁
       if (btnDashiKombu) {
         btnDashiKombu.classList.toggle('level2-locked', !isL2);
         btnDashiKombu.disabled = !isL2;
+        const iconEl = document.getElementById('icon-dashi-kombu');
+        const textEl = document.getElementById('text-dashi-kombu');
+        if (iconEl) {
+          iconEl.className = isL2 ? 'soup-icon kombu-icon' : 'soup-icon';
+          iconEl.textContent = isL2 ? '' : '🔒';
+        }
+        if (textEl) {
+          textEl.innerHTML = isL2 ? 'こんぶ出汁 <small>(Lv.2)</small>' : '🔒 ？？？ <small>(第2ステージ)</small>';
+        }
       }
+
+      // コロッケ
       if (btnTopKorokke) {
         btnTopKorokke.classList.toggle('level2-locked', !isL2);
         btnTopKorokke.disabled = !isL2;
+        const iconEl = document.getElementById('icon-top-korokke');
+        const textEl = document.getElementById('text-top-korokke');
+        if (iconEl) {
+          iconEl.textContent = isL2 ? '🧆' : '🔒';
+        }
+        if (textEl) {
+          textEl.innerHTML = isL2 ? 'コロッケ <small>(Lv.2)</small>' : '🔒 ？？？ <small>(第2ステージ)</small>';
+        }
       }
+
+      // お品書き（壁札）
       if (menuTagKorokke) {
         menuTagKorokke.classList.toggle('level2-locked', !isL2);
-        menuTagKorokke.innerHTML = isL2 ? 'コロッケそば <small>500円</small>' : '🔒 コロッケそば <small>500円</small>';
+        menuTagKorokke.innerHTML = isL2 ? 'コロッケそば <small>500円</small>' : '🔒 ？？？そば <small>第2ステージ</small>';
       }
 
       // 茹で釜ゲージとボタン状態更新（二八 / 十割 / へぎ）
@@ -639,7 +689,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <h4>⚠️ イレギュラー警報：立食い師たちの襲来！</h4>
         <ul>
           <li><b>『月見の銀二』</b>：注文は「かつお出汁 + 十割そば + ネギ + 生卵」</li>
-          <li><b>『コロッケのお銀』</b>（Lv.2登場）：注文は「こんぶ出汁 + 二八そば + ネギ + コロッケ」</li>
+          <li><b>『？？？（謎の立食い師）』</b>（第2ステージ登場）：目標1万円達成後に現れる強敵！</li>
           <li>撃退法：<b>【激辛七味】</b>を入れるか、<b>ジャスト茹で</b>で感動させよ！</li>
           <li>逃げ出したら<b>「お会計」連打</b>で捕まえろ！</li>
         </ul>

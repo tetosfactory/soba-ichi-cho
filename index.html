@@ -66,7 +66,7 @@
       <div class="menu-tag">かけそば <small>350円</small></div>
       <div class="menu-tag">ネギそば <small>400円</small></div>
       <div class="menu-tag highlight-tag">月見そば <small>450円</small></div>
-      <div class="menu-tag level2-tag level2-locked" id="menu-tag-korokke">🔒 コロッケそば <small>500円</small></div>
+      <div class="menu-tag level2-tag level2-locked" id="menu-tag-korokke">🔒 ？？？そば <small>第2ステージ</small></div>
       <div class="menu-tag notice-tag">⚠️ 立食い師無銭飲食警戒中</div>
     </div>
 
@@ -120,7 +120,7 @@
             </div>
             <!-- へぎ蕎麦 (Lv.2解放) -->
             <div class="pot-card level2-locked" id="pot-hegi">
-              <span class="pot-label">へぎ蕎麦 <small>(Lv.2)</small></span>
+              <span class="pot-label" id="pot-hegi-label">🔒 ？？？ <small>(第2ステージ)</small></span>
               <div class="gauge-wrap">
                 <div class="gauge-zone perfect-zone"></div>
                 <div class="gauge-fill" id="pot-hegi-fill"></div>
@@ -146,8 +146,8 @@
               <span>煮干し出汁</span>
             </button>
             <button class="ingredient-btn dashi-btn level2-locked" id="btn-dashi-kombu" disabled>
-              <div class="soup-icon kombu-icon"></div>
-              <span>こんぶ出汁 <small>(Lv.2)</small></span>
+              <div class="soup-icon" id="icon-dashi-kombu">🔒</div>
+              <span id="text-dashi-kombu">🔒 ？？？ <small>(第2ステージ)</small></span>
             </button>
 
             <button class="ingredient-btn topping-btn" id="btn-top-negi">
@@ -159,8 +159,8 @@
               <span>生卵</span>
             </button>
             <button class="ingredient-btn topping-btn level2-locked" id="btn-top-korokke" disabled>
-              <span class="top-icon">🧆</span>
-              <span>コロッケ <small>(Lv.2)</small></span>
+              <span class="top-icon" id="icon-top-korokke">🔒</span>
+              <span id="text-top-korokke">🔒 ？？？ <small>(第2ステージ)</small></span>
             </button>
 
             <!-- 隠し/特殊トッピング：激辛七味 -->
@@ -223,15 +223,15 @@
             </div>
           </div>
 
-          <div class="instruction-box">
-            <h4>⚠️ イレギュラー警報：立食い師たちの襲来！</h4>
-            <ul>
-              <li><b>『月見の銀二』</b>：注文は「かつお出汁 + 十割そば + ネギ + 生卵」</li>
-              <li><b>『コロッケのお銀』</b>（Lv.2登場）：注文は「こんぶ出汁 + 二八そば + ネギ + コロッケ」</li>
-              <li>撃退法：<b>【激辛七味】</b>を入れるか、<b>ジャスト茹で</b>で感動させよ！</li>
-              <li>逃げ出したら<b>「お会計」連打</b>で捕まえろ！</li>
-            </ul>
-          </div>
+            <div class="instruction-box">
+              <h4>⚠️ イレギュラー警報：立食い師たちの襲来！</h4>
+              <ul>
+                <li><b>『月見の銀二』</b>：注文は「かつお出汁 + 十割そば + ネギ + 生卵」</li>
+                <li><b>『？？？（謎の立食い師）』</b>（第2ステージ登場）：目標1万円達成後に現れる強敵！</li>
+                <li>撃退法：<b>【激辛七味】</b>を入れるか、<b>ジャスト茹で</b>で感動させよ！</li>
+                <li>逃げ出したら<b>「お会計」連打</b>で捕まえろ！</li>
+              </ul>
+            </div>
         </div>
         <div class="modal-actions">
           <button id="btn-start-game" class="btn-primary">最初から始める！</button>
