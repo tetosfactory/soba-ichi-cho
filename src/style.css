@@ -816,3 +816,92 @@ button:active {
 }
 
 .level2-tag { border-color: #e76f51 !important; color: #f4a261 !important; }
+
+/* 🏆 エンディング画面スタイル */
+.ending-box {
+  background: linear-gradient(135deg, rgba(30, 20, 10, 0.95) 0%, rgba(60, 40, 15, 0.95) 100%);
+  border: 2px solid var(--accent-gold);
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-bottom: 12px;
+  box-shadow: 0 0 20px rgba(212, 163, 89, 0.4);
+  animation: endingGlow 2s infinite alternate;
+}
+
+@keyframes endingGlow {
+  0% { box-shadow: 0 0 15px rgba(212, 163, 89, 0.3); }
+  100% { box-shadow: 0 0 28px rgba(255, 215, 0, 0.7); }
+}
+
+.ending-badge {
+  display: inline-block;
+  background: linear-gradient(90deg, #ffd700, #ff8c00);
+  color: #111;
+  font-weight: bold;
+  font-size: 0.85rem;
+  padding: 3px 10px;
+  border-radius: 20px;
+  margin-bottom: 6px;
+  letter-spacing: 1px;
+}
+
+.ending-story {
+  font-size: 0.8rem;
+  line-height: 1.45;
+  color: #eee;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 8px 10px;
+  border-radius: 8px;
+  margin: 8px 0;
+  border-left: 3px solid var(--accent-gold);
+  text-align: left;
+}
+
+.ending-stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin: 10px 0;
+  text-align: center;
+}
+
+.ending-stat-card {
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(212, 163, 89, 0.4);
+  border-radius: 8px;
+  padding: 6px 4px;
+}
+
+.ending-stat-label {
+  font-size: 0.68rem;
+  color: #aaa;
+  margin-bottom: 2px;
+}
+
+.ending-stat-val {
+  font-size: 1.05rem;
+  font-weight: bold;
+  color: var(--accent-gold);
+  font-family: var(--font-mincho);
+}
+
+.ending-rank-box {
+  background: linear-gradient(90deg, rgba(212, 163, 89, 0.2), rgba(255, 215, 0, 0.3), rgba(212, 163, 89, 0.2));
+  border: 1px solid var(--accent-gold);
+  border-radius: 8px;
+  padding: 6px 8px;
+  margin-top: 8px;
+}
+
+.ending-rank-title {
+  font-size: 0.72rem;
+  color: #ffd700;
+}
+
+.ending-rank-name {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #fff;
+  font-family: var(--font-mincho);
+  text-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
+}

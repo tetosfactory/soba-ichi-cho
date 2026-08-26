@@ -90,17 +90,24 @@ document.addEventListener('DOMContentLoaded', () => {
     showToast: (msg, type = 'info') => showToastMessage(msg, type),
     showCutin: (msg) => showCutinNotice(msg),
     showSpecialEffect: (type, msg) => showSpecial(type, msg),
-    onGameOver: (isSuccess, game) => handleGameOver(isSuccess, game)
+    onGameOver: (isSuccess, game) => handleGameOver(isSuccess, game),
+    onGoalReached: (game) => handleGoalReached(game),
+    onStage2Clear: (game) => handleStage2Clear(game)
   };
 
   const game = new SobaGame(uiCallbacks);
+  window.game = game;
+
+  let currentModalMode = 'title'; // 'title' | 'day_clear' | 'goal_reached' | 'stage2_clear' | 'game_over'
 
   // オートセーブデータのUI更新
   function updateSaveDataUI() {
     const saveData = game.loadProgress();
     if (saveData && btnContinueGame) {
       btnContinueGame.classList.remove('hidden');
-      btnContinueGame.textContent = `▶️ 続きから始める (第${saveData.day}日目 / 売上${saveData.score}円)`;
+      const stageNum = saveData.stage || 1;
+      const dayNum = saveData.day || 1;
+      btnContinueGame.textContent = `▶️ 続きから始める (${dayNum}日目 / 第${stageNum}ステージ / 売上${saveData.score}円)`;
     } else if (btnContinueGame) {
       btnContinueGame.classList.add('hidden');
     }
@@ -127,15 +134,26 @@ document.addEventListener('DOMContentLoaded', () => {
     game.clearSaveData();
     modalOverlay.classList.add('hidden');
     game.setDifficulty(selectedDifficulty);
-    game.startNewGame(1);
+    currentModalMode = 'playing';
+    game.startNewGame();
   });
 
-  // イベントバインディング：続きから始める
+  // イベントバインディング：続きから始める / 続ける
   if (btnContinueGame) {
     btnContinueGame.addEventListener('click', () => {
       tryRequestFullscreen();
       modalOverlay.classList.add('hidden');
-      game.startFromSave();
+
+      if (currentModalMode === 'goal_reached') {
+        currentModalMode = 'playing';
+        game.startStage2();
+      } else if (currentModalMode === 'day_clear' || currentModalMode === 'stage2_clear') {
+        currentModalMode = 'playing';
+        game.startNextDay();
+      } else {
+        currentModalMode = 'playing';
+        game.startFromSave();
+      }
     });
   }
 
@@ -143,6 +161,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (btnQuitGame) {
     btnQuitGame.addEventListener('click', () => {
       game.quitGame();
+      currentModalMode = 'title';
       modalTitle.textContent = 'そば一丁！';
       resetModalToStart();
       modalOverlay.classList.remove('hidden');
@@ -188,7 +207,7 @@ document.addEventListener('DOMContentLoaded', () => {
       // ヘッダー情報
       if (statMode) statMode.textContent = diffNames[game.difficulty] || 'かんたん';
       if (statLevel) statLevel.textContent = `Lv.${game.level}`;
-      if (statDay) statDay.textContent = `第 ${game.day} 日目`;
+      if (statDay) statDay.textContent = `第 ${game.stage} ステージ`;
       if (statTime) statTime.textContent = `${game.timeRemaining} 秒`;
       if (statScore) statScore.textContent = `${game.score}円 / ${game.targetScore}円`;
       if (statRep) statRep.textContent = `${game.repScore}%`;
@@ -448,37 +467,140 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 2200);
   }
 
-  // ゲームオーバー / クリア
+  // 目標金額1万円到達時のポップアップ
+  function handleGoalReached(game) {
+    currentModalMode = 'goal_reached';
+    sound.playFanfare();
+    confetti({ particleCount: 150, spread: 90, origin: { y: 0.6 } });
+
+    modalOverlay.classList.remove('hidden');
+    modalTitle.textContent = '目標金額に達しました';
+    modalBody.innerHTML = `
+      <div class="result-box success">
+        <h3>🎉 第1ステージ 目標1万円達成！ 🎉</h3>
+        <p class="score-result">累計売上: <span>${game.score}円</span></p>
+        <p>営業日数: ${game.day} 日目 | 提供客数: ${game.stats.servedCount} 人 | 立食い師撃退数: ${game.stats.ginjiDefeated} 人</p>
+        <p class="comment">
+          見事目標金額の1万円に達しました！<br>
+          <small style="color: #ffd166;">※進行状況は自動的にオートセーブされました。</small><br><br>
+          「続ける」を押すと、新食材（こんぶ出汁・へぎ蕎麦・コロッケ）と強敵『コロッケのお銀』が登場する<b>第二ステージ</b>が開始します！
+        </p>
+      </div>
+    `;
+    btnStartGame.textContent = '最初から始める';
+    btnContinueGame.textContent = '▶️ 続ける（第二ステージ開始）';
+    btnContinueGame.classList.remove('hidden');
+  }
+
+  function handleStage2Clear(game) {
+    currentModalMode = 'stage2_clear';
+    sound.playFanfare();
+
+    // 連続花吹雪（エンディング演出）
+    const duration = 2500;
+    const animationEnd = Date.now() + duration;
+    const interval = setInterval(() => {
+      const timeLeft = animationEnd - Date.now();
+      if (timeLeft <= 0) return clearInterval(interval);
+      confetti({
+        particleCount: 40,
+        startVelocity: 30,
+        spread: 360,
+        origin: { x: Math.random(), y: Math.random() - 0.2 }
+      });
+    }, 250);
+
+    // 称号決定ロジック
+    let rankName = '🍜 天下一品・立ち食い蕎麦職人';
+    if (game.stats.ginjiDefeated >= 4 && game.day <= 3) {
+      rankName = '🌟 神速無敗の立ち食い仙人';
+    } else if (game.stats.ginjiDefeated >= 4) {
+      rankName = '⚔️ 立食い師キラー・蕎麦奉行';
+    } else if (game.day <= 2) {
+      rankName = '⚡ 電光石火のワンオペ大将';
+    } else if (game.score >= 25000) {
+      rankName = '💰 億万長者・蕎麦御殿当主';
+    }
+
+    modalOverlay.classList.remove('hidden');
+    modalTitle.textContent = '🏆 祝・全ステージ制覇！ 🏆';
+    modalBody.innerHTML = `
+      <div class="ending-box">
+        <div class="ending-badge">✨ 堂々完結 / GAME CLEAR ✨</div>
+        <div class="ending-story">
+          「月見の銀二」や「コロッケのお銀」ら伝説の立食い師たちをその神速の茹で技と激辛七味で見事ねじ伏せ、目標売上<b>20,000円</b>の大台を突破！<br>
+          江戸前立ち食い蕎麦の粋と情熱を極めたあなたの店は、今や天下に轟く伝説の名店となった――。
+        </div>
+
+        <div class="ending-stats-grid">
+          <div class="ending-stat-card">
+            <div class="ending-stat-label">💰 最終総売上</div>
+            <div class="ending-stat-val">${game.score.toLocaleString()}円</div>
+          </div>
+          <div class="ending-stat-card">
+            <div class="ending-stat-label">📅 達成営業日数</div>
+            <div class="ending-stat-val">${game.day} 日目</div>
+          </div>
+          <div class="ending-stat-card">
+            <div class="ending-stat-label">🥢 提供した蕎麦</div>
+            <div class="ending-stat-val">${game.stats.servedCount} 杯</div>
+          </div>
+          <div class="ending-stat-card">
+            <div class="ending-stat-label">🛡️ 立食い師撃退数</div>
+            <div class="ending-stat-val">${game.stats.ginjiDefeated} 人</div>
+          </div>
+        </div>
+
+        <div class="ending-rank-box">
+          <div class="ending-rank-title">🎖️ 認定称号 🎖️</div>
+          <div class="ending-rank-name">${rankName}</div>
+        </div>
+      </div>
+    `;
+    btnStartGame.textContent = '🔄 最初から始める（NEW GAME）';
+    btnContinueGame.textContent = `▶️ エンドレス営業を続ける（${game.day + 1}日目へ）`;
+    btnContinueGame.classList.remove('hidden');
+  }
+
+  // 1日の営業終了（タイムアップ or 評判0）
   function handleGameOver(isSuccess, game) {
     modalOverlay.classList.remove('hidden');
-    updateSaveDataUI();
+    btnStartGame.textContent = '最初から始める';
 
     if (isSuccess) {
+      currentModalMode = 'day_clear';
       sound.playFanfare();
       confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
 
-      modalTitle.textContent = `🎉 第 ${game.day} 日目 営業大成功！ 🎉`;
+      modalTitle.textContent = `🎉 ${game.day}日目 営業クリア！ 🎉`;
       modalBody.innerHTML = `
         <div class="result-box success">
-          <h3>本日の本業成果 (第${game.day}日目)</h3>
-          <p class="score-result">累計売上: <span>${game.score}円</span> (本日目標クリア！)</p>
-          <p>到達レベル: <b>Lv.${game.level}</b></p>
-          <p>客提供数: ${game.stats.servedCount} 人</p>
+          <h3>本日の営業成果 (${game.day}日目 / 第${game.stage}ステージ)</h3>
+          <p class="score-result">現在の累計売上: <span>${game.score}円</span> (目標: ${game.targetScore}円)</p>
+          <p>評判度: <b>${game.repScore}%</b> | 提供客数: ${game.stats.servedCount} 人</p>
           <p>立食い師撃退数: ${game.stats.ginjiDefeated} 人</p>
-          <p class="comment">江戸前蕎麦の粋を魅せつけ、見事営業を終えた！<br><small style="color: #ffd166;">※本日の成果はオートセーブされました。明日も頑張りましょう！</small></p>
+          <p class="comment">
+            見事本日の営業を黒字で終えました！<br>
+            <small style="color: #ffd166;">※売上と進行状況はオートセーブされました。</small><br><br>
+            「続ける」を押すと、売上を引き継いで<b>${game.day + 1}日目</b>の営業が始まります！
+          </p>
         </div>
       `;
+      btnContinueGame.textContent = `▶️ 続ける（${game.day + 1}日目へ）`;
+      btnContinueGame.classList.remove('hidden');
     } else {
+      currentModalMode = 'game_over';
       sound.playAngry();
       modalTitle.textContent = '💀 閉店追い込まれ… 💀';
       modalBody.innerHTML = `
         <div class="result-box fail">
-          <h3>本日の結果 (第${game.day}日目)</h3>
+          <h3>本日の結果 (${game.day}日目)</h3>
           <p class="score-result">最終売上: <span>${game.score}円</span> (目標 ${game.targetScore}円)</p>
           <p>最終評判: ${game.repScore}%</p>
-          <p class="comment">売上不振または評判失墜で店が潰れかけてしまった…</p>
+          <p class="comment">売上がないか、評判失墜で店を畳むことになってしまった…</p>
         </div>
       `;
+      btnContinueGame.classList.add('hidden');
     }
   }
 
