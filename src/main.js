@@ -331,17 +331,21 @@ document.addEventListener('DOMContentLoaded', () => {
           cardEl.className = 'customer-card';
           if (customer.isGinji) cardEl.classList.add('ginji-card');
           if (customer.isOgin)  cardEl.classList.add('ogin-card');
+          if (customer.isSpicyLover) cardEl.classList.add('spicy-lover-card');
 
           if (customer.state === 'waiting') {
             const pct = Math.max(0, (customer.patience / customer.maxPatience) * 100);
+            const spicyTagHtml = customer.isSpicyLover ? '<span class="spicy-tag">🌶️ 刺激求む</span>' : '';
+            const spicyQuoteHtml = customer.isSpicyLover ? `<div class="spicy-quote">💬 「${customer.quote}」</div>` : '';
+
             cardEl.innerHTML = `
               <div class="customer-speech">
                 <div class="order-title">${customer.getOrderName()}</div>
-                <div class="order-quote">「${customer.quote}」</div>
+                ${spicyQuoteHtml}
                 <div class="recipe-hint">${customer.getRecipeIcons()}</div>
               </div>
               <div class="customer-avatar">${customer.avatar}</div>
-              <div class="customer-name">${customer.name}</div>
+              <div class="customer-name">${customer.name} ${spicyTagHtml}</div>
               <div class="patience-bar">
                 <div class="patience-fill" style="width: ${pct}%;"></div>
               </div>

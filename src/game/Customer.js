@@ -28,6 +28,13 @@ const CUSTOMER_AVATARS = [
   { name: '板前ケンジ',       avatar: '👨‍🍳', quote: 'へぎ蕎麦とコロッケ頼む' }  // Level 2常連
 ];
 
+const SPICY_LOVER_QUOTES = [
+  '刺激的な辛〜い蕎麦が食べたいな…🌶️',
+  '汗が吹き飛ぶほど辛いやつ、期待してるぜ！🔥',
+  '今日は無性にカプサイシンを欲してるんだ…！',
+  'ピリッと辛い隠し味、入れてくれてもいいんだぜ？🌶️'
+];
+
 export class Customer {
   constructor(id, isGinji = false, isOgin = false, difficulty = 'normal', level = 1) {
     this.id = id;
@@ -36,6 +43,9 @@ export class Customer {
     this.isTachiguishi = isGinji || isOgin;
     this.difficulty = difficulty;
     this.level = level;
+
+    // 通常のお客さんの中で約25%の確率で「隠れ激辛好き（辛党）」になる
+    this.isSpicyLover = !this.isTachiguishi && Math.random() < 0.25;
 
     let patienceMultiplier = 1.0;
     let requiredCatch = 8;
@@ -80,7 +90,9 @@ export class Customer {
       const template = CUSTOMER_AVATARS[Math.floor(Math.random() * CUSTOMER_AVATARS.length)];
       this.name   = template.name;
       this.avatar = template.avatar;
-      this.quote  = template.quote;
+      this.quote  = this.isSpicyLover
+        ? SPICY_LOVER_QUOTES[Math.floor(Math.random() * SPICY_LOVER_QUOTES.length)]
+        : template.quote;
       this.order  = this.generateRandomOrder();
       this.price  = this.calculatePrice(this.order);
     }
@@ -163,8 +175,10 @@ export class Customer {
     if (bowl.dashi  !== this.order.dashi)  return false;
     if (bowl.noodle !== this.order.noodle) return false;
 
-    // 立食い師への激辛七味トラップ
-    if (this.isTachiguishi && bowl.toppings.includes('spicy_chili')) {
+    const hasChili = bowl.toppings.includes('spicy_chili');
+
+    // 1. 立食い師への激辛七味トラップ
+    if (this.isTachiguishi && hasChili) {
       return 'spicy_defeat';
     }
 
@@ -173,11 +187,22 @@ export class Customer {
     const allMatch = this.order.toppings.every(t => cleanToppings.includes(t));
     if (!allMatch) return false;
 
-    // 立食い師への完璧茹で感服
+    // 2. 激辛好き客への激辛七味トッピングボーナス！
+    if (this.isSpicyLover && hasChili) {
+      return 'spicy_lover_success';
+    }
+
+    // 3. 辛党ではない普通客に七味が入っていた場合は不合格（辛すぎて食べられない）
+    if (!this.isTachiguishi && !this.isSpicyLover && hasChili) {
+      return false;
+    }
+
+    // 4. 立食い師への完璧茹で感服
     if (this.isTachiguishi && bowl.isPerfectCooked) {
       return 'perfect_defeat';
     }
 
+    // 5. 通常合格（辛党客に七味がなくても通常通り合格）
     return true;
   }
 }

@@ -457,6 +457,29 @@ export class SobaGame {
       if (this.checkScoreGoal()) return;
       setTimeout(() => { if (!this.isPlaying) return; this.customers[seatIndex] = null; this.ui.onGameStateChange(this); }, 2500);
 
+    } else if (result === 'spicy_lover_success') {
+      sound.playChiliSpicy();
+      sound.playServeSuccess();
+      sound.playCoin();
+
+      const patienceTip = Math.floor((customer.patience / customer.maxPatience) * 100);
+      const perfectBonus = bowl.isPerfectCooked ? 150 : 0;
+      const spicyBonus = 250; // 隠れ激辛好きへの特別ボーナス
+      const totalGet = customer.price + patienceTip + perfectBonus + spicyBonus;
+
+      this.score += totalGet;
+      this.stats.earnings += totalGet;
+      this.stats.servedCount++;
+      if (!this.stats.spicyLoverServed) this.stats.spicyLoverServed = 0;
+      this.stats.spicyLoverServed++;
+
+      this.ui.showSpecialEffect('chili', `「うおおッ！この激辛な刺激が最高なんだ！！」`);
+      this.ui.showToast(`🔥 激辛マニア大感激！ +${totalGet}円（激辛ボーナス+${spicyBonus}円 ＋ チップ+${patienceTip}円${perfectBonus > 0 ? ' ＋ 茹で+'+perfectBonus+'円' : ''}）`, 'success');
+
+      bowl.clear();
+      this.customers[seatIndex] = null;
+      if (this.checkScoreGoal()) return;
+
     } else if (result === true) {
       if (customer.isTachiguishi) {
         customer.state = 'escaping';

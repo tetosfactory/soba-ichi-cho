@@ -297,6 +297,47 @@ button:active {
   display: none !important;
 }
 
+.spicy-quote {
+  display: block !important;
+  font-size: 0.65rem !important;
+  color: #ff6b6b !important;
+  font-weight: bold;
+  background: rgba(255, 60, 0, 0.15);
+  border-radius: 4px;
+  padding: 1px 4px;
+  margin-top: 2px;
+  line-height: 1.15;
+}
+
+/* 🌶️ 激辛好き客のカード演出 */
+.spicy-lover-card {
+  border: 1.5px solid #ff4d4d !important;
+  box-shadow: 0 0 10px rgba(255, 77, 77, 0.45) !important;
+  position: relative;
+}
+
+.spicy-lover-card .customer-avatar {
+  filter: drop-shadow(0 0 6px rgba(255, 60, 0, 0.6)) !important;
+}
+
+.spicy-tag {
+  display: inline-block;
+  font-size: 0.62rem;
+  background: linear-gradient(90deg, #ff4500, #ff8c00);
+  color: #fff;
+  padding: 1px 5px;
+  border-radius: 10px;
+  margin-left: 3px;
+  font-weight: bold;
+  vertical-align: middle;
+  animation: pulseGlow 1.5s infinite alternate;
+}
+
+@keyframes pulseGlow {
+  0% { transform: scale(0.95); opacity: 0.85; }
+  100% { transform: scale(1.05); opacity: 1; box-shadow: 0 0 6px #ff4500; }
+}
+
 .recipe-hint {
   font-size: 0.9rem;
   color: var(--accent-gold);
