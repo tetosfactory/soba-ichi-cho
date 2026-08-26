@@ -166,8 +166,15 @@ export class Customer {
     let toppingLabels  = cleanTops.map(t => TOPPING_TYPES[t].icon + TOPPING_TYPES[t].name).join(' ');
     if (!toppingLabels) toppingLabels = '具なし';
 
-    // Order: noodle first, then dashi, then toppings
-    return `<span class="recipe-noodle">${noodleLabel}</span> | <span class="recipe-dashi">${dashiLabel}</span> | <span class="recipe-toppings">${toppingLabels}</span>`;
+    return `
+      <div class="recipe-row main-recipe">
+        <span class="recipe-badge noodle-badge">${noodleLabel}</span>
+        <span class="recipe-badge dashi-badge">${dashiLabel}</span>
+      </div>
+      <div class="recipe-row sub-recipe">
+        <span class="recipe-badge topping-badge">${toppingLabels}</span>
+      </div>
+    `;
   }
 
   checkOrder(bowl) {
