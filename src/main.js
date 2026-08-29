@@ -314,13 +314,13 @@ document.addEventListener('DOMContentLoaded', () => {
               const sec = Math.ceil(customer.patience);
               if (pct < 30) {
                 patienceInd.className = 'patience-indicator status-danger';
-                patienceInd.innerHTML = `<span class="patience-face">😠</span><span class="patience-text">💢 限界寸前！ ${sec}秒</span>`;
+                patienceInd.innerHTML = `<span class="patience-face">😠</span><div class="patience-labels"><span class="patience-mood">💢 限界寸前！</span><span class="patience-sec">${sec}秒</span></div>`;
               } else if (pct < 60) {
                 patienceInd.className = 'patience-indicator status-warn';
-                patienceInd.innerHTML = `<span class="patience-face">😐</span><span class="patience-text">まだかな… ${sec}秒</span>`;
+                patienceInd.innerHTML = `<span class="patience-face">😐</span><div class="patience-labels"><span class="patience-mood">まだかな…</span><span class="patience-sec">${sec}秒</span></div>`;
               } else {
                 patienceInd.className = 'patience-indicator status-fine';
-                patienceInd.innerHTML = `<span class="patience-face">😄</span><span class="patience-text">ご機嫌 待ち${sec}秒</span>`;
+                patienceInd.innerHTML = `<span class="patience-face">😄</span><div class="patience-labels"><span class="patience-mood">ご機嫌</span><span class="patience-sec">待ち${sec}秒</span></div>`;
               }
             }
             const escapeFill = slotEl.querySelector('.escape-fill');
@@ -348,15 +348,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
             let indFace = '😄';
             let indClass = 'status-fine';
-            let indText = `ご機嫌 待ち${sec}秒`;
+            let indMood = 'ご機嫌';
             if (pct < 30) {
               indFace = '😠';
               indClass = 'status-danger';
-              indText = `💢 限界寸前！ ${sec}秒`;
+              indMood = '💢 限界寸前！';
             } else if (pct < 60) {
               indFace = '😐';
               indClass = 'status-warn';
-              indText = `まだかな… ${sec}秒`;
+              indMood = 'まだかな…';
             }
 
             cardEl.innerHTML = `
@@ -371,7 +371,10 @@ document.addEventListener('DOMContentLoaded', () => {
               </div>
               <div class="patience-indicator ${indClass}">
                 <span class="patience-face">${indFace}</span>
-                <span class="patience-text">${indText}</span>
+                <div class="patience-labels">
+                  <span class="patience-mood">${indMood}</span>
+                  <span class="patience-sec">待ち${sec}秒</span>
+                </div>
               </div>
               <button class="btn-serve" id="btn-serve-${seatIndex}">へいお待ち！</button>
             `;
@@ -398,7 +401,10 @@ document.addEventListener('DOMContentLoaded', () => {
               </div>
               <div class="patience-indicator status-danger">
                 <span class="patience-face">🚨</span>
-                <span class="patience-text">逃走中！連打で阻止</span>
+                <div class="patience-labels">
+                  <span class="patience-mood">逃走中！</span>
+                  <span class="patience-sec">連打で阻止</span>
+                </div>
               </div>
               <button class="btn-catch" id="btn-catch-${seatIndex}">お会計！（連打：${customer.catchClicks}/${customer.requiredCatchClicks}）</button>
             `;
