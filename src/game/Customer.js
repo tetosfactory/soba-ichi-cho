@@ -167,13 +167,9 @@ export class Customer {
     if (!toppingLabels) toppingLabels = '具なし';
 
     return `
-      <div class="recipe-row main-recipe">
-        <span class="recipe-badge noodle-badge">${noodleLabel}</span>
-        <span class="recipe-badge dashi-badge">${dashiLabel}</span>
-      </div>
-      <div class="recipe-row sub-recipe">
-        <span class="recipe-badge topping-badge">${toppingLabels}</span>
-      </div>
+      <span class="recipe-badge noodle-badge">${noodleLabel}</span>
+      <span class="recipe-badge dashi-badge">${dashiLabel}</span>
+      <span class="recipe-badge topping-badge">${toppingLabels}</span>
     `;
   }
 

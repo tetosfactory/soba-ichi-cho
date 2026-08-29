@@ -329,15 +329,14 @@ document.addEventListener('DOMContentLoaded', () => {
           if (customer.state === 'waiting') {
             const pct = Math.max(0, (customer.patience / customer.maxPatience) * 100);
             const spicyTagHtml = customer.isSpicyLover ? '<span class="spicy-tag">🌶️ 辛党</span>' : '';
-            const spicyQuoteHtml = customer.isSpicyLover ? `<div class="spicy-quote">💬 刺激的な辛さ求む！</div>` : '';
 
             cardEl.innerHTML = `
               <div class="customer-speech">
                 <div class="recipe-hint">${customer.getRecipeIcons()}</div>
-                ${spicyQuoteHtml}
               </div>
               <div class="customer-avatar">${customer.avatar}</div>
               <div class="customer-name">${customer.name} ${spicyTagHtml}</div>
+              <div class="customer-quote-box">「${customer.quote}」</div>
               <div class="patience-bar">
                 <div class="patience-fill" style="width: ${pct}%;"></div>
               </div>
@@ -357,10 +356,10 @@ document.addEventListener('DOMContentLoaded', () => {
             cardEl.innerHTML = `
               <div class="customer-speech alert-speech">
                 <div class="order-title text-danger">食い逃げ中！</div>
-                <div class="order-quote">「ごちそうさん！」</div>
               </div>
               <div class="customer-avatar">${customer.avatar}</div>
               <div class="customer-name text-danger">${customer.name}</div>
+              <div class="customer-quote-box text-danger">「ごちそうさん！」</div>
               <div class="escape-bar">
                 <div class="escape-fill" style="width: ${customer.escapeProgress}%;"></div>
               </div>
@@ -380,7 +379,7 @@ document.addEventListener('DOMContentLoaded', () => {
             cardEl.innerHTML = `
               <div class="customer-avatar">😵</div>
               <div class="customer-name">${customer.name}</div>
-              <div style="color: #4cd964; font-weight: bold; margin-top: 5px;">参りました！</div>
+              <div class="customer-quote-box">「参りました…！」</div>
             `;
             slotEl.appendChild(cardEl);
           }
@@ -438,6 +437,7 @@ document.addEventListener('DOMContentLoaded', () => {
           bowlsContainer.appendChild(bowlEl);
         });
       }
+
     } catch (err) {
       console.error('[render ERROR]', err);
     }
