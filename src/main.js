@@ -308,6 +308,21 @@ document.addEventListener('DOMContentLoaded', () => {
               const pct = Math.max(0, (customer.patience / customer.maxPatience) * 100);
               patienceFill.style.width = `${pct}%`;
             }
+            const patienceInd = slotEl.querySelector('.patience-indicator');
+            if (patienceInd && customer.state === 'waiting') {
+              const pct = Math.max(0, (customer.patience / customer.maxPatience) * 100);
+              const sec = Math.ceil(customer.patience);
+              if (pct < 30) {
+                patienceInd.className = 'patience-indicator status-danger';
+                patienceInd.innerHTML = `<span class="patience-face">😠</span><span class="patience-text">💢 限界寸前！ ${sec}秒</span>`;
+              } else if (pct < 60) {
+                patienceInd.className = 'patience-indicator status-warn';
+                patienceInd.innerHTML = `<span class="patience-face">😐</span><span class="patience-text">まだかな… ${sec}秒</span>`;
+              } else {
+                patienceInd.className = 'patience-indicator status-fine';
+                patienceInd.innerHTML = `<span class="patience-face">😄</span><span class="patience-text">ご機嫌 待ち${sec}秒</span>`;
+              }
+            }
             const escapeFill = slotEl.querySelector('.escape-fill');
             if (escapeFill) {
               escapeFill.style.width = `${customer.escapeProgress}%`;
@@ -328,7 +343,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
           if (customer.state === 'waiting') {
             const pct = Math.max(0, (customer.patience / customer.maxPatience) * 100);
+            const sec = Math.ceil(customer.patience);
             const spicyTagHtml = customer.isSpicyLover ? '<span class="spicy-tag">🌶️ 辛党</span>' : '';
+
+            let indFace = '😄';
+            let indClass = 'status-fine';
+            let indText = `ご機嫌 待ち${sec}秒`;
+            if (pct < 30) {
+              indFace = '😠';
+              indClass = 'status-danger';
+              indText = `💢 限界寸前！ ${sec}秒`;
+            } else if (pct < 60) {
+              indFace = '😐';
+              indClass = 'status-warn';
+              indText = `まだかな… ${sec}秒`;
+            }
 
             cardEl.innerHTML = `
               <div class="customer-speech">
@@ -339,6 +368,10 @@ document.addEventListener('DOMContentLoaded', () => {
               <div class="customer-quote-box">「${customer.quote}」</div>
               <div class="patience-bar">
                 <div class="patience-fill" style="width: ${pct}%;"></div>
+              </div>
+              <div class="patience-indicator ${indClass}">
+                <span class="patience-face">${indFace}</span>
+                <span class="patience-text">${indText}</span>
               </div>
               <button class="btn-serve" id="btn-serve-${seatIndex}">へいお待ち！</button>
             `;
@@ -362,6 +395,10 @@ document.addEventListener('DOMContentLoaded', () => {
               <div class="customer-quote-box text-danger">「ごちそうさん！」</div>
               <div class="escape-bar">
                 <div class="escape-fill" style="width: ${customer.escapeProgress}%;"></div>
+              </div>
+              <div class="patience-indicator status-danger">
+                <span class="patience-face">🚨</span>
+                <span class="patience-text">逃走中！連打で阻止</span>
               </div>
               <button class="btn-catch" id="btn-catch-${seatIndex}">お会計！（連打：${customer.catchClicks}/${customer.requiredCatchClicks}）</button>
             `;
