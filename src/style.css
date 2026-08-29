@@ -386,10 +386,14 @@ button:active {
 
 .customer-avatar {
   font-size: 2.2rem !important;
+  height: 2.3rem;
   margin: 1px 0 0;
   line-height: 1;
   filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .customer-name {
@@ -400,14 +404,15 @@ button:active {
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 100%;
-  line-height: 1.1;
+  height: 1.2rem;
+  line-height: 1.2rem;
   flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-/* お客さん1人に対して1枠のコメント表示枠（2行折り返しで全文表示） */
+/* お客さん1人に対して1枠のコメント表示枠（1行でも2行分を完全固定確保） */
 .customer-quote-box {
   background: rgba(0, 0, 0, 0.55);
   border: 1px solid rgba(212, 163, 89, 0.35);
@@ -423,7 +428,9 @@ button:active {
   flex-shrink: 0;
   white-space: normal;
   word-break: break-all;
-  min-height: 2.5em;
+  height: 34px;
+  min-height: 34px;
+  max-height: 34px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -457,10 +464,11 @@ button:active {
   border-radius: 6px;
   font-weight: bold;
   font-size: 0.85rem;
-  padding: 4px 2px;
+  padding: 0 2px;
   width: 100%;
   min-height: 34px;
   height: 34px;
+  max-height: 34px;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -478,10 +486,11 @@ button:active {
   border-radius: 6px;
   font-weight: bold;
   font-size: 0.76rem;
-  padding: 4px 2px;
+  padding: 0 2px;
   width: 100%;
   min-height: 34px;
   height: 34px;
+  max-height: 34px;
   cursor: pointer;
   display: flex;
   align-items: center;
