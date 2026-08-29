@@ -506,6 +506,7 @@ button:active {
 }
 
 .patience-mood {
+  display: block;
   font-size: 0.68rem;
   font-weight: bold;
   line-height: 1.2;
@@ -514,9 +515,10 @@ button:active {
 }
 
 .patience-sec {
-  font-size: 0.78rem;
+  display: block;
+  font-size: 0.85rem;
   font-weight: 900;
-  line-height: 1.1;
+  line-height: 1.15;
   text-align: center;
   letter-spacing: 0.5px;
 }
