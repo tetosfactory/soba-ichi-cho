@@ -1,5 +1,6 @@
 // メインエントリーポイント＆UIバインディング
 
+import './style.css';
 import confetti from 'canvas-confetti';
 import { SobaGame } from './game/Game.js';
 import { DASHI_TYPES, NOODLE_TYPES, TOPPING_TYPES } from './game/Customer.js';
@@ -314,13 +315,22 @@ document.addEventListener('DOMContentLoaded', () => {
               const sec = Math.ceil(customer.patience);
               if (pct < 30) {
                 patienceInd.className = 'patience-indicator status-danger';
-                patienceInd.innerHTML = `<span class="patience-face">😠</span><div class="patience-labels"><span class="patience-mood">💢 限界寸前！</span><span class="patience-sec">${sec}秒</span></div>`;
+                patienceInd.innerHTML = `
+                  <div class="patience-mood-line">😠 💢 限界寸前！</div>
+                  <div class="patience-time-line">残り ${sec}秒</div>
+                `;
               } else if (pct < 60) {
                 patienceInd.className = 'patience-indicator status-warn';
-                patienceInd.innerHTML = `<span class="patience-face">😐</span><div class="patience-labels"><span class="patience-mood">まだかな…</span><span class="patience-sec">${sec}秒</span></div>`;
+                patienceInd.innerHTML = `
+                  <div class="patience-mood-line">😐 まだかな…</div>
+                  <div class="patience-time-line">待ち ${sec}秒</div>
+                `;
               } else {
                 patienceInd.className = 'patience-indicator status-fine';
-                patienceInd.innerHTML = `<span class="patience-face">😄</span><div class="patience-labels"><span class="patience-mood">ご機嫌</span><span class="patience-sec">待ち${sec}秒</span></div>`;
+                patienceInd.innerHTML = `
+                  <div class="patience-mood-line">😄 ご機嫌</div>
+                  <div class="patience-time-line">待ち ${sec}秒</div>
+                `;
               }
             }
             const escapeFill = slotEl.querySelector('.escape-fill');
@@ -346,17 +356,17 @@ document.addEventListener('DOMContentLoaded', () => {
             const sec = Math.ceil(customer.patience);
             const spicyTagHtml = customer.isSpicyLover ? '<span class="spicy-tag">🌶️ 辛党</span>' : '';
 
-            let indFace = '😄';
             let indClass = 'status-fine';
-            let indMood = 'ご機嫌';
+            let indMood = '😄 ご機嫌';
+            let indTime = `待ち ${sec}秒`;
             if (pct < 30) {
-              indFace = '😠';
               indClass = 'status-danger';
-              indMood = '💢 限界寸前！';
+              indMood = '😠 💢 限界寸前！';
+              indTime = `残り ${sec}秒`;
             } else if (pct < 60) {
-              indFace = '😐';
               indClass = 'status-warn';
-              indMood = 'まだかな…';
+              indMood = '😐 まだかな…';
+              indTime = `待ち ${sec}秒`;
             }
 
             cardEl.innerHTML = `
@@ -370,11 +380,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="patience-fill" style="width: ${pct}%;"></div>
               </div>
               <div class="patience-indicator ${indClass}">
-                <span class="patience-face">${indFace}</span>
-                <div class="patience-labels">
-                  <span class="patience-mood">${indMood}</span>
-                  <span class="patience-sec">待ち${sec}秒</span>
-                </div>
+                <div class="patience-mood-line">${indMood}</div>
+                <div class="patience-time-line">${indTime}</div>
               </div>
               <button class="btn-serve" id="btn-serve-${seatIndex}">へいお待ち！</button>
             `;
@@ -400,11 +407,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="escape-fill" style="width: ${customer.escapeProgress}%;"></div>
               </div>
               <div class="patience-indicator status-danger">
-                <span class="patience-face">🚨</span>
-                <div class="patience-labels">
-                  <span class="patience-mood">逃走中！</span>
-                  <span class="patience-sec">連打で阻止</span>
-                </div>
+                <div class="patience-mood-line">🚨 逃走中！</div>
+                <div class="patience-time-line">連打で阻止</div>
               </div>
               <button class="btn-catch" id="btn-catch-${seatIndex}">お会計！（連打：${customer.catchClicks}/${customer.requiredCatchClicks}）</button>
             `;
