@@ -36,11 +36,12 @@ export class SobaGame {
     this.bowls = [new Bowl(0), new Bowl(1), new Bowl(2)];
     this.selectedBowlIndex = 0;
 
-    // 茹で釜 (二八 / 十割 / へぎ)
+    // 茹で釜 (二八 / 十割 / へぎ / 田舎)
     this.pots = {
       nihachi: new NoodlePot('nihachi', 'nihachi'),
       juwari:  new NoodlePot('juwari', 'juwari'),
-      hegi:    new NoodlePot('hegi', 'hegi')
+      hegi:    new NoodlePot('hegi', 'hegi'),
+      inaka:   new NoodlePot('inaka', 'inaka')
     };
 
     // タイマーID
@@ -115,7 +116,7 @@ export class SobaGame {
     this.difficulty = saveData.difficulty || 'normal';
     this.stage      = saveData.stage || 1;
     this.day        = saveData.day   || 1;
-    this.level      = saveData.level || (this.stage >= 2 ? 2 : 1);
+    this.level      = saveData.level || (this.stage >= 3 ? 3 : (this.stage >= 2 ? 2 : 1));
     this.score      = saveData.score || 0;
     this.repScore   = saveData.repScore || 100;
     this.stats      = saveData.stats || { servedCount: 0, ginjiDefeated: 0, ginjiEscaped: 0, earnings: 0 };
@@ -138,12 +139,19 @@ export class SobaGame {
     this._startSession();
   }
 
-  /** エンドレス営業開始（第2ステージクリア後） */
-  startEndless() {
+  /** 第3ステージ開始 */
+  startStage3() {
     this.stage = 3;
-    this.level = 2;
+    this.level = 3;
     this.day++;
-    this.level2UnlockedNotified = true;
+    this._startSession();
+  }
+
+  /** エンドレス営業開始（第3ステージクリア後） */
+  startEndless() {
+    this.stage = 4;
+    this.level = 3;
+    this.day++;
     this._startSession();
   }
 
@@ -161,13 +169,19 @@ export class SobaGame {
       if      (this.difficulty === 'easy')   this.timeRemaining = 150;
       else if (this.difficulty === 'normal') this.timeRemaining = 120;
       else                                   this.timeRemaining = 90;
+    } else if (this.stage === 3) {
+      this.targetScore = 30000;
+      this.level = 3;
+      if      (this.difficulty === 'easy')   this.timeRemaining = 180;
+      else if (this.difficulty === 'normal') this.timeRemaining = 150;
+      else                                   this.timeRemaining = 120;
     } else {
-      // stage >= 3 (エンドレス営業)
+      // stage >= 4 (エンドレス営業)
       this.targetScore = Infinity;
-      this.level = 2;
-      if      (this.difficulty === 'easy')   this.timeRemaining = 150;
-      else if (this.difficulty === 'normal') this.timeRemaining = 120;
-      else                                   this.timeRemaining = 90;
+      this.level = 3;
+      if      (this.difficulty === 'easy')   this.timeRemaining = 180;
+      else if (this.difficulty === 'normal') this.timeRemaining = 150;
+      else                                   this.timeRemaining = 120;
     }
 
     this.isPlaying = true;
@@ -178,6 +192,7 @@ export class SobaGame {
     this.pots.nihachi.reset();
     this.pots.juwari.reset();
     this.pots.hegi.reset();
+    this.pots.inaka.reset();
 
     this.spawnCustomer();
     setTimeout(() => { if (this.isPlaying) this.spawnCustomer(); }, 1500);
@@ -204,6 +219,7 @@ export class SobaGame {
     this.pots.nihachi.reset();
     this.pots.juwari.reset();
     this.pots.hegi.reset();
+    this.pots.inaka.reset();
 
     this.ui.onGameStateChange(this);
   }
@@ -262,10 +278,26 @@ export class SobaGame {
 
     let isGinji = false;
     let isOgin  = false;
+    let isGonzo = false;
 
     if (this.ginjiSpawnedToday < 3 && Math.random() < 0.35) {
       this.ginjiSpawnedToday++;
-      if (this.level >= 2 && Math.random() < 0.5) {
+      if (this.level >= 3) {
+        const rand = Math.random();
+        if (rand < 0.34) {
+          isGonzo = true;
+          sound.playGinjiAlert();
+          this.ui.showCutin('立食い師『イカ天の権蔵』が現れた！無銭飲食に気をつけろ！');
+        } else if (rand < 0.67) {
+          isOgin = true;
+          sound.playGinjiAlert();
+          this.ui.showCutin('立食い師『コロッケのお銀』が現れた！無銭飲食に気をつけろ！');
+        } else {
+          isGinji = true;
+          sound.playGinjiAlert();
+          this.ui.showCutin('立食い師『月見の銀二』が現れた！無銭飲食に気をつけろ！');
+        }
+      } else if (this.level >= 2 && Math.random() < 0.5) {
         isOgin = true;
         sound.playGinjiAlert();
         this.ui.showCutin('立食い師『コロッケのお銀』が現れた！無銭飲食に気をつけろ！');
@@ -276,7 +308,7 @@ export class SobaGame {
       }
     }
 
-    const newCustomer = new Customer(Date.now(), isGinji, isOgin, this.difficulty, this.level);
+    const newCustomer = new Customer(Date.now(), isGinji, isOgin, isGonzo, this.difficulty, this.level);
     this.customers[targetSeat] = newCustomer;
     this.ui.onGameStateChange(this);
   }
@@ -337,21 +369,63 @@ export class SobaGame {
     const currentBowl = this.bowls[this.selectedBowlIndex];
     if (currentBowl.toppings.includes(toppingType)) return;
     currentBowl.toppings.push(toppingType);
-    if (toppingType === 'spicy_chili') {
-      sound.playChiliSpicy();
+    sound.playTopping();
+    this.ui.onGameStateChange(this);
+  }
+
+  setNegiLevel(level, bowlIndex = null) {
+    if (!this.isPlaying) return;
+    if (bowlIndex !== null && bowlIndex >= 0 && bowlIndex < this.bowls.length) {
+      this.selectedBowlIndex = bowlIndex;
+    }
+    const currentBowl = this.bowls[this.selectedBowlIndex];
+    // 同じボタンを押したら通常に戻すトグル動作
+    if (currentBowl.negiLevel === level) {
+      currentBowl.negiLevel = 'normal';
+      this.ui.showToast(`丼${this.selectedBowlIndex + 1}: ネギ通常`, 'info');
     } else {
+      currentBowl.negiLevel = level;
+      const label = level === 'mashi' ? '🥬 ネギ増し！' : '🥬 ネギ抜き';
+      this.ui.showToast(`丼${this.selectedBowlIndex + 1}: ${label}`, 'info');
+    }
+    sound.playTopping();
+    this.ui.onGameStateChange(this);
+  }
+
+  setTogarashiLevel(level, bowlIndex = null) {
+    if (!this.isPlaying) return;
+    if (bowlIndex !== null && bowlIndex >= 0 && bowlIndex < this.bowls.length) {
+      this.selectedBowlIndex = bowlIndex;
+    }
+    const currentBowl = this.bowls[this.selectedBowlIndex];
+    // 同じボタンを押したら通常に戻すトグル動作
+    if (currentBowl.togarashiLevel === level) {
+      currentBowl.togarashiLevel = 'normal';
+      this.ui.showToast(`丼${this.selectedBowlIndex + 1}: 唐辛子通常`, 'info');
       sound.playTopping();
+    } else {
+      currentBowl.togarashiLevel = level;
+      if (level === 'mashi') {
+        sound.playChiliSpicy();
+        this.ui.showToast(`丼${this.selectedBowlIndex + 1}: 🌶️ 唐辛子増し！`, 'warning');
+      } else {
+        sound.playTopping();
+        this.ui.showToast(`丼${this.selectedBowlIndex + 1}: 🌶️ 唐辛子抜き`, 'info');
+      }
     }
     this.ui.onGameStateChange(this);
   }
 
-  discardBowl() {
+  discardBowl(bowlIndex = null) {
     if (!this.isPlaying) return;
+    if (bowlIndex !== null && bowlIndex >= 0 && bowlIndex < this.bowls.length) {
+      this.selectedBowlIndex = bowlIndex;
+    }
     const currentBowl = this.bowls[this.selectedBowlIndex];
-    if (!currentBowl.dashi && !currentBowl.noodle && currentBowl.toppings.length === 0) return;
+    if (!currentBowl.dashi && !currentBowl.noodle && currentBowl.toppings.length === 0 && currentBowl.negiLevel === 'normal' && currentBowl.togarashiLevel === 'normal') return;
     currentBowl.clear();
     sound.playTrash();
-    this.ui.showToast('どんぶりの蕎麦を破棄しました（-50円）', 'info');
+    this.ui.showToast(`丼${this.selectedBowlIndex + 1}: 破棄しました（-50円）`, 'info');
     this.score = Math.max(0, this.score - 50);
     this.ui.onGameStateChange(this);
   }
@@ -360,7 +434,7 @@ export class SobaGame {
 
   /**
    * 売上加算のたびに呼び出す。
-   * 1万円（第1ステージ）または2万円（第2ステージ）に達したらゲームを即停止。
+   * 1万円（第1ステージ）、2万円（第2ステージ）、3万円（第3ステージ）に達したらゲームを即停止。
    * @returns {boolean} 目標達成してゲームを止めたらtrue
    */
   checkScoreGoal() {
@@ -372,6 +446,9 @@ export class SobaGame {
     } else if (this.stage === 2 && this.score >= 20000) {
       this._triggerStage2Clear();
       return true;
+    } else if (this.stage === 3 && this.score >= 30000) {
+      this._triggerStage3Clear();
+      return true;
     }
     return false;
   }
@@ -381,7 +458,7 @@ export class SobaGame {
     this._stopTimers();
     sound.stopBGM();
 
-    // セーブ: stage=2, level=2, day=翌日として保存（次回再開や続けるボタンで第2ステージへ）
+    // セーブ: stage=2, level=2, day=翌日として保存
     this.saveProgress({ stage: 2, level: 2, day: this.day + 1 });
 
     // 盤面をクリア
@@ -392,19 +469,35 @@ export class SobaGame {
     this.ui.onGameStateChange(this);
   }
 
-  /** 第2ステージ クリア（目標2万円達成＆エンディング） */
+  /** 第2ステージ クリア（目標2万円達成 → 第3ステージへ） */
   _triggerStage2Clear() {
     this._stopTimers();
     sound.stopBGM();
 
-    // セーブ: 次回継続時は「stage: 3 (エンドレス)」として保存
-    this.saveProgress({ stage: 3, level: 2, day: this.day + 1 });
+    // セーブ: stage=3, level=3, day=翌日として保存
+    this.saveProgress({ stage: 3, level: 3, day: this.day + 1 });
 
     // 盤面をクリア
     this.customers = [null, null, null];
     this.bowls.forEach(b => b.clear());
 
     if (this.ui.onStage2Clear) this.ui.onStage2Clear(this);
+    this.ui.onGameStateChange(this);
+  }
+
+  /** 第3ステージ クリア（目標3万円達成 → エンディング / エンドレスへ） */
+  _triggerStage3Clear() {
+    this._stopTimers();
+    sound.stopBGM();
+
+    // セーブ: stage=4 (エンドレス), level=3, day=翌日として保存
+    this.saveProgress({ stage: 4, level: 3, day: this.day + 1 });
+
+    // 盤面をクリア
+    this.customers = [null, null, null];
+    this.bowls.forEach(b => b.clear());
+
+    if (this.ui.onStage3Clear) this.ui.onStage3Clear(this);
     this.ui.onGameStateChange(this);
   }
 
@@ -437,8 +530,8 @@ export class SobaGame {
       this.stats.ginjiDefeated++;
       this.stats.servedCount++;
       customer.state = 'defeated';
-      this.ui.showSpecialEffect('chili', `「グはッ！？この激辛七味は…！降参だぁぁ！」`);
-      this.ui.showToast(`${customer.name}撃退！ 激辛七味で反撃成功！（+${reward}円獲得）`, 'success');
+      this.ui.showSpecialEffect('chili', `「グはッ！？このトウガラシ増しは…！降参だぁぁ！」`);
+      this.ui.showToast(`${customer.name}撃退！ トウガラシ増しで反撃成功！（+${reward}円獲得）`, 'success');
       bowl.clear();
       if (this.checkScoreGoal()) return;
       setTimeout(() => { if (!this.isPlaying) return; this.customers[seatIndex] = null; this.ui.onGameStateChange(this); }, 2500);
@@ -473,8 +566,8 @@ export class SobaGame {
       if (!this.stats.spicyLoverServed) this.stats.spicyLoverServed = 0;
       this.stats.spicyLoverServed++;
 
-      this.ui.showSpecialEffect('chili', `「うおおッ！この激辛な刺激が最高なんだ！！」`);
-      this.ui.showToast(`🔥 激辛マニア大感激！ +${totalGet}円（激辛ボーナス+${spicyBonus}円 ＋ チップ+${patienceTip}円${perfectBonus > 0 ? ' ＋ 茹で+'+perfectBonus+'円' : ''}）`, 'success');
+      this.ui.showSpecialEffect('chili', `「うおおッ！このトウガラシ増しの刺激が最高なんだ！！」`);
+      this.ui.showToast(`🔥 辛党マニア大感激！ +${totalGet}円（激辛ボーナス+${spicyBonus}円 ＋ チップ+${patienceTip}円${perfectBonus > 0 ? ' ＋ 茹で+'+perfectBonus+'円' : ''}）`, 'success');
 
       bowl.clear();
       this.customers[seatIndex] = null;
@@ -507,22 +600,30 @@ export class SobaGame {
       }
     } else {
       sound.playAngry();
-      const cleanToppings = bowl.toppings.filter(t => t !== 'spicy_chili');
       let mismatch = '';
-      const dashiNames    = { katsuo: 'かつお出汁', niboshi: '煮干し出汁', kombu: 'こんぶ出汁' };
-      const noodleNames   = { nihachi: '二八そば', juwari: '十割そば', hegi: 'へぎ蕎麦' };
-      const toppingNamesMap = { negi: 'ネギ', raw_egg: '生卵', korokke: 'コロッケ' };
+      const dashiNames    = { katsuo: 'かつお出汁', niboshi: '煮干し出汁', kombu: 'こんぶ出汁', soda: '宗田節出汁' };
+      const noodleNames   = { nihachi: '二八そば', juwari: '十割そば', hegi: 'へぎ蕎麦', inaka: '田舎そば' };
+      const toppingNamesMap = { raw_egg: '生卵', korokke: 'コロッケ', ikaten: 'イカ天' };
+
       if (bowl.dashi !== customer.order.dashi) {
         mismatch = `出汁が違う！（${dashiNames[bowl.dashi] || bowl.dashi}→${dashiNames[customer.order.dashi] || customer.order.dashi}が必要）`;
       } else if (bowl.noodle !== customer.order.noodle) {
         mismatch = `麺が違う！（${noodleNames[customer.order.noodle] || customer.order.noodle}が必要）`;
-      } else if (cleanToppings.length < customer.order.toppings.length) {
-        const missing = customer.order.toppings.filter(t => !cleanToppings.includes(t));
+      } else if (bowl.toppings.length < customer.order.toppings.length) {
+        const missing = customer.order.toppings.filter(t => !bowl.toppings.includes(t));
         mismatch = `${missing.map(t => toppingNamesMap[t] || t).join('と')}が足りない！`;
-      } else if (cleanToppings.length > customer.order.toppings.length) {
+      } else if (bowl.toppings.length > customer.order.toppings.length) {
         mismatch = 'トッピングが多すぎる！';
+      } else if (!customer.order.toppings.every(t => bowl.toppings.includes(t))) {
+        mismatch = 'トッピングの種類が違う！';
+      } else if (bowl.negiLevel !== customer.order.negiLevel) {
+        const negiLabels = { normal: '普通', nashi: '抜き', mashi: '増し' };
+        mismatch = `ネギが違う！（注文はネギ${negiLabels[customer.order.negiLevel]}）`;
+      } else if (bowl.togarashiLevel !== customer.order.togarashiLevel) {
+        const chiliLabels = { normal: '普通', nashi: '抜き', mashi: '増し' };
+        mismatch = `トウガラシが違う！（注文は🌶️${chiliLabels[customer.order.togarashiLevel]}）`;
       } else {
-        mismatch = 'トッピングが違う！';
+        mismatch = '注文と違います！';
       }
       this.ui.showToast(`注文と違う！ ${mismatch}`, 'error');
     }
@@ -574,6 +675,9 @@ export class SobaGame {
       return;
     } else if (this.stage === 2 && this.score >= 20000) {
       this._triggerStage2Clear();
+      return;
+    } else if (this.stage === 3 && this.score >= 30000) {
+      this._triggerStage3Clear();
       return;
     }
 

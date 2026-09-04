@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>そば一丁！ 〜月見の銀二とコロッケのお銀〜</title>
+  <title>そば一丁！ 〜月見の銀二・コロッケのお銀・イカ天の権蔵〜</title>
   <meta name="theme-color" content="#2b1b12">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -16,18 +16,18 @@
   <link rel="apple-touch-icon" href="./icon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@700;800&family=Zen+Maru+Gothic:wght@500;700;900&display=swap" rel="stylesheet">
-  <script type="module" crossorigin src="/soba-ichi-cho/assets/index-BXB75x94.js"></script>
-  <link rel="stylesheet" crossorigin href="/soba-ichi-cho/assets/index-0OSLiHM_.css">
+  <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@700;800&family=Zen+Maru+Gothic:wght@500;700;900&display=swap" rel="stylesheet">
+  <script type="module" crossorigin src="/soba-ichi-cho/assets/index-DBeNnl3D.js"></script>
+  <link rel="stylesheet" crossorigin href="/soba-ichi-cho/assets/index-D1h4-MAw.css">
 </head>
 <body>
   <div id="app">
     <!-- レトロ看板＆ステータスバー -->
     <header class="game-header">
       <div class="shop-sign">
-        <div class="lantern left">🏮 蕎麦</div>
+        <span class="lantern left">🏮 蕎麦</span>
         <h1 id="app-title">そば一丁！</h1>
-        <div class="lantern right">🏮 営業中</div>
+        <span class="lantern right">🏮 営業中</span>
       </div>
       <div class="status-panel">
         <div class="stat-item">
@@ -35,41 +35,28 @@
           <span id="stat-mode" class="stat-val highlight-mode">かんたん</span>
         </div>
         <div class="stat-item">
-          <span class="stat-label">レベル</span>
-          <span id="stat-level" class="stat-val highlight-level">Lv.1</span>
-        </div>
-        <div class="stat-item">
-          <span class="stat-label">ステージ</span>
-          <span id="stat-day" class="stat-val">第 1 ステージ</span>
+          <span class="stat-label">日数</span>
+          <span id="stat-day" class="stat-val">1日目</span>
         </div>
         <div class="stat-item">
           <span class="stat-label">残り時間</span>
-          <span id="stat-time" class="stat-val highlight">90 秒</span>
+          <span id="stat-time" class="stat-val highlight">90秒</span>
         </div>
         <div class="stat-item">
           <span class="stat-label">売上 / 目標</span>
-          <span id="stat-score" class="stat-val">0円 / 10000円</span>
+          <span id="stat-score" class="stat-val">0 / 10,000円</span>
         </div>
         <div class="stat-item">
-          <span class="stat-label">店の評判</span>
-          <div class="rep-bar-container">
-            <div id="rep-bar-fill" class="rep-bar-fill" style="width: 100%;"></div>
-          </div>
-          <span id="stat-rep" class="stat-sub">100%</span>
+          <span class="stat-label">評判</span>
+          <span id="stat-rep" class="stat-val">100%</span>
         </div>
         <button id="btn-sound-toggle" class="btn-icon" title="音量切替">🔊</button>
-        <button id="btn-quit-game" class="btn-quit" title="ゲームをやめる">🚪 やめる</button>
+        <button id="btn-quit-game" class="btn-quit" title="やめる">
+          <span class="quit-icon">🚪</span>
+          <span class="quit-text">やめる</span>
+        </button>
       </div>
     </header>
-
-    <!-- お品書き（壁掛け札） -->
-    <div class="menu-board">
-      <div class="menu-tag">かけそば <small>350円</small></div>
-      <div class="menu-tag">ネギそば <small>400円</small></div>
-      <div class="menu-tag highlight-tag">月見そば <small>450円</small></div>
-      <div class="menu-tag level2-tag level2-locked" id="menu-tag-korokke">🔒 コロッケそば <small>500円</small></div>
-      <div class="menu-tag notice-tag">⚠️ 立食い師無銭飲食警戒中</div>
-    </div>
 
     <main class="game-viewport">
       <!-- 客カウンターエリア -->
@@ -104,7 +91,7 @@
               </div>
               <div class="pot-btns">
                 <button class="btn-action" id="btn-boil-nihachi">茹でる</button>
-                <button class="btn-action btn-get" id="btn-get-nihachi" disabled>丼へ盛る</button>
+                <button class="btn-action btn-get" id="btn-get-nihachi" disabled>盛る</button>
               </div>
             </div>
             <!-- 十割そば -->
@@ -116,63 +103,75 @@
               </div>
               <div class="pot-btns">
                 <button class="btn-action" id="btn-boil-juwari">茹でる</button>
-                <button class="btn-action btn-get" id="btn-get-juwari" disabled>丼へ盛る</button>
+                <button class="btn-action btn-get" id="btn-get-juwari" disabled>盛る</button>
               </div>
             </div>
             <!-- へぎ蕎麦 (Lv.2解放) -->
             <div class="pot-card level2-locked" id="pot-hegi">
-              <span class="pot-label">へぎ蕎麦 <small>(Lv.2)</small></span>
+              <span class="pot-label" id="pot-hegi-label">🔒 ？？？</span>
               <div class="gauge-wrap">
                 <div class="gauge-zone perfect-zone"></div>
                 <div class="gauge-fill" id="pot-hegi-fill"></div>
               </div>
               <div class="pot-btns">
                 <button class="btn-action" id="btn-boil-hegi" disabled>茹でる</button>
-                <button class="btn-action btn-get" id="btn-get-hegi" disabled>丼へ盛る</button>
+                <button class="btn-action btn-get" id="btn-get-hegi" disabled>盛る</button>
+              </div>
+            </div>
+            <!-- 田舎そば (Lv.3解放) -->
+            <div class="pot-card level3-locked" id="pot-inaka">
+              <span class="pot-label" id="pot-inaka-label">🔒 ？？？</span>
+              <div class="gauge-wrap">
+                <div class="gauge-zone perfect-zone"></div>
+                <div class="gauge-fill" id="pot-inaka-fill"></div>
+              </div>
+              <div class="pot-btns">
+                <button class="btn-action" id="btn-boil-inaka" disabled>茹でる</button>
+                <button class="btn-action btn-get" id="btn-get-inaka" disabled>盛る</button>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- 材量・出汁・トッピング・特殊調理台 -->
+        <!-- 材量・出汁・トッピング台 -->
         <div class="station-box ingredient-station">
-          <div class="station-title">🧂 出汁 ＆ トッピング</div>
-          <div class="ingredient-grid">
-            <button class="ingredient-btn dashi-btn" id="btn-dashi-katsuo">
-              <div class="soup-icon katsuo-icon"></div>
-              <span>かつお出汁</span>
-            </button>
-            <button class="ingredient-btn dashi-btn" id="btn-dashi-niboshi">
-              <div class="soup-icon niboshi-icon"></div>
-              <span>煮干し出汁</span>
-            </button>
-            <button class="ingredient-btn dashi-btn level2-locked" id="btn-dashi-kombu" disabled>
-              <div class="soup-icon kombu-icon"></div>
-              <span>こんぶ出汁 <small>(Lv.2)</small></span>
-            </button>
+          <div class="station-title">🧂 出汁 ＆ トッピング具材</div>
+          <div class="ingredient-container">
+            <!-- 1行目: 出汁4種 (4分割) -->
+            <div class="dashi-grid">
+              <button class="ingredient-btn dashi-btn" id="btn-dashi-katsuo" title="かつお出汁">
+                <div class="soup-icon katsuo-icon"></div>
+                <span>かつお出汁</span>
+              </button>
+              <button class="ingredient-btn dashi-btn" id="btn-dashi-niboshi" title="煮干し出汁">
+                <div class="soup-icon niboshi-icon"></div>
+                <span>煮干し出汁</span>
+              </button>
+              <button class="ingredient-btn dashi-btn level2-locked" id="btn-dashi-kombu" disabled title="こんぶ出汁 (Lv.2)">
+                <div class="soup-icon" id="icon-dashi-kombu">🔒</div>
+                <span id="text-dashi-kombu">🔒 ？？？</span>
+              </button>
+              <button class="ingredient-btn dashi-btn level3-locked" id="btn-dashi-soda" disabled title="宗田節出汁 (Lv.3)">
+                <div class="soup-icon" id="icon-dashi-soda">🔒</div>
+                <span id="text-dashi-soda">🔒 ？？？</span>
+              </button>
+            </div>
 
-            <button class="ingredient-btn topping-btn" id="btn-top-negi">
-              <span class="top-icon">🥬</span>
-              <span>刻みネギ</span>
-            </button>
-            <button class="ingredient-btn topping-btn" id="btn-top-egg">
-              <span class="top-icon">🥚</span>
-              <span>生卵</span>
-            </button>
-            <button class="ingredient-btn topping-btn level2-locked" id="btn-top-korokke" disabled>
-              <span class="top-icon">🧆</span>
-              <span>コロッケ <small>(Lv.2)</small></span>
-            </button>
-
-            <!-- 隠し/特殊トッピング：激辛七味 -->
-            <button class="ingredient-btn secret-btn" id="btn-top-chili" title="対・立食い師専用トラップ">
-              <span class="top-icon">🌶️</span>
-              <span>激辛七味</span>
-            </button>
-            <button class="ingredient-btn trash-btn" id="btn-trash">
-              <span class="top-icon">🗑️</span>
-              <span>捨ててやり直す</span>
-            </button>
+            <!-- 2行目: トッピング3種 (3分割) -->
+            <div class="topping-grid">
+              <button class="ingredient-btn topping-btn" id="btn-top-egg" title="生卵">
+                <span class="top-icon">🥚</span>
+                <span>生卵</span>
+              </button>
+              <button class="ingredient-btn topping-btn level2-locked" id="btn-top-korokke" disabled title="コロッケ (Lv.2)">
+                <span class="top-icon" id="icon-top-korokke">🔒</span>
+                <span id="text-top-korokke">🔒 ？？？</span>
+              </button>
+              <button class="ingredient-btn topping-btn level3-locked" id="btn-top-ikaten" disabled title="イカ天 (Lv.3)">
+                <span class="top-icon" id="icon-top-ikaten">🔒</span>
+                <span id="text-top-ikaten">🔒 ？？？</span>
+              </button>
+            </div>
           </div>
         </div>
       </section>
@@ -224,15 +223,17 @@
             </div>
           </div>
 
-          <div class="instruction-box">
-            <h4>⚠️ イレギュラー警報：立食い師たちの襲来！</h4>
-            <ul>
-              <li><b>『月見の銀二』</b>：注文は「かつお出汁 + 十割そば + ネギ + 生卵」</li>
-              <li><b>『コロッケのお銀』</b>（Lv.2登場）：注文は「こんぶ出汁 + 二八そば + ネギ + コロッケ」</li>
-              <li>撃退法：<b>【激辛七味】</b>を入れるか、<b>ジャスト茹で</b>で感動させよ！</li>
-              <li>逃げ出したら<b>「お会計」連打</b>で捕まえろ！</li>
-            </ul>
-          </div>
+            <div class="instruction-box">
+              <h4>⚠️ イレギュラー警報：立食い師たちの襲来！</h4>
+              <ul>
+                <li><b>『月見の銀二』</b>：かつお出汁 + 十割そば + 月見（第1ステージ目標1万円）</li>
+                <li><b>『コロッケのお銀』</b>：こんぶ出汁 + 二八そば + コロッケ（第2ステージ目標2万円）</li>
+                <li><b>『イカ天の権蔵』</b>：宗田節出汁 + 田舎そば + イカ天（第3ステージ目標3万円）</li>
+                <li>撃退法：<b>【唐辛子増し】</b>にして提供するか、<b>ジャスト湯切り</b>で感動させよ！</li>
+                <li>※ネギと唐辛子は<b>全丼デフォルト</b>で投入済。注文に応じて「増し/抜き」で調整！</li>
+                <li>逃げ出したら<b>「お会計」連打</b>で捕まえろ！</li>
+              </ul>
+            </div>
         </div>
         <div class="modal-actions">
           <button id="btn-start-game" class="btn-primary">最初から始める！</button>
@@ -241,6 +242,6 @@
       </div>
     </div>
   </div>
-
+
 </body>
 </html>

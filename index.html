@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>そば一丁！ 〜月見の銀二とコロッケのお銀〜</title>
+  <title>そば一丁！ 〜月見の銀二・コロッケのお銀・イカ天の権蔵〜</title>
   <meta name="theme-color" content="#2b1b12">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -117,48 +117,60 @@
                 <button class="btn-action btn-get" id="btn-get-hegi" disabled>盛る</button>
               </div>
             </div>
+            <!-- 田舎そば (Lv.3解放) -->
+            <div class="pot-card level3-locked" id="pot-inaka">
+              <span class="pot-label" id="pot-inaka-label">🔒 ？？？</span>
+              <div class="gauge-wrap">
+                <div class="gauge-zone perfect-zone"></div>
+                <div class="gauge-fill" id="pot-inaka-fill"></div>
+              </div>
+              <div class="pot-btns">
+                <button class="btn-action" id="btn-boil-inaka" disabled>茹でる</button>
+                <button class="btn-action btn-get" id="btn-get-inaka" disabled>盛る</button>
+              </div>
+            </div>
           </div>
         </div>
 
-        <!-- 材量・出汁・トッピング・特殊調理台 -->
+        <!-- 材量・出汁・トッピング台 -->
         <div class="station-box ingredient-station">
-          <div class="station-title">🧂 出汁 ＆ トッピング</div>
-          <div class="ingredient-grid">
-            <button class="ingredient-btn dashi-btn" id="btn-dashi-katsuo">
-              <div class="soup-icon katsuo-icon"></div>
-              <span>かつお出汁</span>
-            </button>
-            <button class="ingredient-btn dashi-btn" id="btn-dashi-niboshi">
-              <div class="soup-icon niboshi-icon"></div>
-              <span>煮干し出汁</span>
-            </button>
-            <button class="ingredient-btn dashi-btn level2-locked" id="btn-dashi-kombu" disabled>
-              <div class="soup-icon" id="icon-dashi-kombu">🔒</div>
-              <span id="text-dashi-kombu">🔒 ？？？</span>
-            </button>
+          <div class="station-title">🧂 出汁 ＆ トッピング具材</div>
+          <div class="ingredient-container">
+            <!-- 1行目: 出汁4種 (4分割) -->
+            <div class="dashi-grid">
+              <button class="ingredient-btn dashi-btn" id="btn-dashi-katsuo" title="かつお出汁">
+                <div class="soup-icon katsuo-icon"></div>
+                <span>かつお出汁</span>
+              </button>
+              <button class="ingredient-btn dashi-btn" id="btn-dashi-niboshi" title="煮干し出汁">
+                <div class="soup-icon niboshi-icon"></div>
+                <span>煮干し出汁</span>
+              </button>
+              <button class="ingredient-btn dashi-btn level2-locked" id="btn-dashi-kombu" disabled title="こんぶ出汁 (Lv.2)">
+                <div class="soup-icon" id="icon-dashi-kombu">🔒</div>
+                <span id="text-dashi-kombu">🔒 ？？？</span>
+              </button>
+              <button class="ingredient-btn dashi-btn level3-locked" id="btn-dashi-soda" disabled title="宗田節出汁 (Lv.3)">
+                <div class="soup-icon" id="icon-dashi-soda">🔒</div>
+                <span id="text-dashi-soda">🔒 ？？？</span>
+              </button>
+            </div>
 
-            <button class="ingredient-btn topping-btn" id="btn-top-negi">
-              <span class="top-icon">🥬</span>
-              <span>ネギ</span>
-            </button>
-            <button class="ingredient-btn topping-btn" id="btn-top-egg">
-              <span class="top-icon">🥚</span>
-              <span>生卵</span>
-            </button>
-            <button class="ingredient-btn topping-btn level2-locked" id="btn-top-korokke" disabled>
-              <span class="top-icon" id="icon-top-korokke">🔒</span>
-              <span id="text-top-korokke">🔒 ？？？</span>
-            </button>
-
-            <!-- 隠し/特殊トッピング：激辛七味 -->
-            <button class="ingredient-btn secret-btn" id="btn-top-chili" title="対・立食い師＆辛党用">
-              <span class="top-icon">🌶️</span>
-              <span>激辛七味</span>
-            </button>
-            <button class="ingredient-btn trash-btn" id="btn-trash" title="丼をリセット">
-              <span class="top-icon">🗑️</span>
-              <span>破棄</span>
-            </button>
+            <!-- 2行目: トッピング3種 (3分割) -->
+            <div class="topping-grid">
+              <button class="ingredient-btn topping-btn" id="btn-top-egg" title="生卵">
+                <span class="top-icon">🥚</span>
+                <span>生卵</span>
+              </button>
+              <button class="ingredient-btn topping-btn level2-locked" id="btn-top-korokke" disabled title="コロッケ (Lv.2)">
+                <span class="top-icon" id="icon-top-korokke">🔒</span>
+                <span id="text-top-korokke">🔒 ？？？</span>
+              </button>
+              <button class="ingredient-btn topping-btn level3-locked" id="btn-top-ikaten" disabled title="イカ天 (Lv.3)">
+                <span class="top-icon" id="icon-top-ikaten">🔒</span>
+                <span id="text-top-ikaten">🔒 ？？？</span>
+              </button>
+            </div>
           </div>
         </div>
       </section>
@@ -213,9 +225,11 @@
             <div class="instruction-box">
               <h4>⚠️ イレギュラー警報：立食い師たちの襲来！</h4>
               <ul>
-                <li><b>『月見の銀二』</b>：注文は「かつお出汁 + 十割そば + ネギ + 生卵」</li>
-                <li><b>『？？？（謎の立食い師）』</b>（第2ステージ登場）：目標1万円達成後に現れる強敵！</li>
-                <li>撃退法：<b>【激辛七味】</b>を入れるか、<b>ジャスト茹で</b>で感動させよ！</li>
+                <li><b>『月見の銀二』</b>：かつお出汁 + 十割そば + 月見（第1ステージ目標1万円）</li>
+                <li><b>『コロッケのお銀』</b>：こんぶ出汁 + 二八そば + コロッケ（第2ステージ目標2万円）</li>
+                <li><b>『イカ天の権蔵』</b>：宗田節出汁 + 田舎そば + イカ天（第3ステージ目標3万円）</li>
+                <li>撃退法：<b>【唐辛子増し】</b>にして提供するか、<b>ジャスト湯切り</b>で感動させよ！</li>
+                <li>※ネギと唐辛子は<b>全丼デフォルト</b>で投入済。注文に応じて「増し/抜き」で調整！</li>
                 <li>逃げ出したら<b>「お会計」連打</b>で捕まえろ！</li>
               </ul>
             </div>

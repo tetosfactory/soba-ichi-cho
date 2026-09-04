@@ -52,17 +52,20 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnGetHegi     = document.getElementById('btn-get-hegi');
   const potHegiFill    = document.getElementById('pot-hegi-fill');
 
+  const potInakaEl     = document.getElementById('pot-inaka');
+  const btnBoilInaka   = document.getElementById('btn-boil-inaka');
+  const btnGetInaka    = document.getElementById('btn-get-inaka');
+  const potInakaFill   = document.getElementById('pot-inaka-fill');
+
   // 食材ボタン
   const btnDashiKatsuo  = document.getElementById('btn-dashi-katsuo');
   const btnDashiNiboshi = document.getElementById('btn-dashi-niboshi');
   const btnDashiKombu   = document.getElementById('btn-dashi-kombu');
-  const btnTopNegi      = document.getElementById('btn-top-negi');
+  const btnDashiSoda    = document.getElementById('btn-dashi-soda');
+
   const btnTopEgg       = document.getElementById('btn-top-egg');
   const btnTopKorokke   = document.getElementById('btn-top-korokke');
-  const btnTopChili     = document.getElementById('btn-top-chili');
-  const btnTrash        = document.getElementById('btn-trash');
-
-  const menuTagKorokke  = document.getElementById('menu-tag-korokke');
+  const btnTopIkaten    = document.getElementById('btn-top-ikaten');
 
   // 初期スロットDOMの固定生成（チラつき防止）
   for (let i = 0; i < 3; i++) {
@@ -93,20 +96,21 @@ document.addEventListener('DOMContentLoaded', () => {
     showSpecialEffect: (type, msg) => showSpecial(type, msg),
     onGameOver: (isSuccess, game) => handleGameOver(isSuccess, game),
     onGoalReached: (game) => handleGoalReached(game),
-    onStage2Clear: (game) => handleStage2Clear(game)
+    onStage2Clear: (game) => handleStage2Clear(game),
+    onStage3Clear: (game) => handleStage3Clear(game)
   };
 
   const game = new SobaGame(uiCallbacks);
   window.game = game;
 
-  let currentModalMode = 'title'; // 'title' | 'day_clear' | 'goal_reached' | 'stage2_clear' | 'game_over'
+  let currentModalMode = 'title'; // 'title' | 'day_clear' | 'goal_reached' | 'stage2_clear' | 'stage3_clear' | 'game_over'
 
   // オートセーブデータのUI更新
   function updateSaveDataUI() {
     const saveData = game.loadProgress();
     if (saveData && btnContinueGame) {
       btnContinueGame.classList.remove('hidden');
-      const stageText = (saveData.stage >= 3) ? 'エンドレス営業' : `第${saveData.stage || 1}ステージ`;
+      const stageText = (saveData.stage >= 4) ? 'エンドレス営業' : `第${saveData.stage || 1}ステージ`;
       const dayNum = saveData.day || 1;
       btnContinueGame.textContent = `▶️ 続きから始める (${dayNum}日目 / ${stageText} / 売上${saveData.score.toLocaleString()}円)`;
     } else if (btnContinueGame) {
@@ -150,6 +154,9 @@ document.addEventListener('DOMContentLoaded', () => {
         game.startStage2();
       } else if (currentModalMode === 'stage2_clear') {
         currentModalMode = 'playing';
+        game.startStage3();
+      } else if (currentModalMode === 'stage3_clear') {
+        currentModalMode = 'playing';
         game.startEndless();
       } else if (currentModalMode === 'day_clear') {
         currentModalMode = 'playing';
@@ -189,8 +196,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     game.addDashi('kombu');
   });
+  btnDashiSoda.addEventListener('click',    () => {
+    if (game.level < 3) {
+      showToastMessage('🔒 宗田節出汁は第3ステージ（目標2万円達成後）で解放されます！', 'warning');
+      return;
+    }
+    game.addDashi('soda');
+  });
 
-  btnTopNegi.addEventListener('click',     () => game.addTopping('negi'));
   btnTopEgg.addEventListener('click',      () => game.addTopping('raw_egg'));
   btnTopKorokke.addEventListener('click',  () => {
     if (game.level < 2) {
@@ -199,8 +212,44 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     game.addTopping('korokke');
   });
-  btnTopChili.addEventListener('click',    () => game.addTopping('spicy_chili'));
-  btnTrash.addEventListener('click',       () => game.discardBowl());
+  btnTopIkaten.addEventListener('click',   () => {
+    if (game.level < 3) {
+      showToastMessage('🔒 イカ天は第3ステージ（目標2万円達成後）で解放されます！', 'warning');
+      return;
+    }
+    game.addTopping('ikaten');
+  });
+
+  // 丼ステーションのイベント委任（ネギ増し/抜き、唐辛子増し/抜き、破棄、丼選択）
+  bowlsContainer.addEventListener('click', (e) => {
+    const actionBtn = e.target.closest('[data-action]');
+    if (actionBtn) {
+      const action = actionBtn.getAttribute('data-action');
+      const bowlIdx = parseInt(actionBtn.getAttribute('data-bowl'), 10);
+      if (isNaN(bowlIdx)) return;
+
+      if (action === 'negi-mashi') {
+        game.setNegiLevel('mashi', bowlIdx);
+      } else if (action === 'negi-nashi') {
+        game.setNegiLevel('nashi', bowlIdx);
+      } else if (action === 'chili-mashi') {
+        game.setTogarashiLevel('mashi', bowlIdx);
+      } else if (action === 'chili-nashi') {
+        game.setTogarashiLevel('nashi', bowlIdx);
+      } else if (action === 'trash') {
+        game.discardBowl(bowlIdx);
+      }
+      return;
+    }
+
+    const bowlItem = e.target.closest('.bowl-item, .bowl-slot-unit');
+    if (bowlItem) {
+      const bowlIdx = parseInt(bowlItem.getAttribute('data-bowl'), 10);
+      if (!isNaN(bowlIdx)) {
+        game.selectBowl(bowlIdx);
+      }
+    }
+  });
 
   btnBoilNihachi.addEventListener('click', () => game.boilNoodle('nihachi'));
   btnGetNihachi.addEventListener('click',  () => game.addNoodleToBowl('nihachi'));
@@ -220,6 +269,18 @@ document.addEventListener('DOMContentLoaded', () => {
     game.addNoodleToBowl('hegi');
   });
 
+  btnBoilInaka.addEventListener('click',   () => {
+    if (game.level < 3) {
+      showToastMessage('🔒 田舎そばは第3ステージ（目標2万円達成後）で解放されます！', 'warning');
+      return;
+    }
+    game.boilNoodle('inaka');
+  });
+  btnGetInaka.addEventListener('click',    () => {
+    if (game.level < 3) return;
+    game.addNoodleToBowl('inaka');
+  });
+
   const diffNames = {
     easy: 'かんたん',
     normal: 'ふつう',
@@ -230,7 +291,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function render(game) {
     try {
       // ヘッダー情報
-      const isEndless = game.stage >= 3;
+      const isEndless = game.stage >= 4;
       if (statMode) statMode.textContent = diffNames[game.difficulty] || 'かんたん';
       if (statDay) statDay.textContent = isEndless ? `${game.day}日目(∞)` : `${game.day}日目(第${game.stage})`;
       if (statTime) statTime.textContent = `${game.timeRemaining}秒`;
@@ -238,10 +299,11 @@ document.addEventListener('DOMContentLoaded', () => {
       if (statRep) statRep.textContent = `${game.repScore}%`;
       if (repBarFill) repBarFill.style.width = `${game.repScore}%`;
 
-      // レベル2解放状態のUI切り替え（伏せ字 ↔ 解放）
+      // 解放状態のUI切り替え（伏せ字 ↔ 解放）
       const isL2 = game.level >= 2;
+      const isL3 = game.level >= 3;
 
-      // へぎ蕎麦（茹で釜）
+      // へぎ蕎麦（茹で釜 Lv.2）
       if (potHegiEl) potHegiEl.classList.toggle('level2-locked', !isL2);
       if (btnBoilHegi) btnBoilHegi.disabled = !isL2;
       const potHegiLabel = document.getElementById('pot-hegi-label');
@@ -249,7 +311,15 @@ document.addEventListener('DOMContentLoaded', () => {
         potHegiLabel.innerHTML = isL2 ? 'へぎ蕎麦 <small>(Lv.2)</small>' : '🔒 ？？？';
       }
 
-      // こんぶ出汁
+      // 田舎そば（茹で釜 Lv.3）
+      if (potInakaEl) potInakaEl.classList.toggle('level3-locked', !isL3);
+      if (btnBoilInaka) btnBoilInaka.disabled = !isL3;
+      const potInakaLabel = document.getElementById('pot-inaka-label');
+      if (potInakaLabel) {
+        potInakaLabel.innerHTML = isL3 ? '田舎そば <small>(Lv.3)</small>' : '🔒 ？？？';
+      }
+
+      // こんぶ出汁 (Lv.2)
       if (btnDashiKombu) {
         btnDashiKombu.classList.toggle('level2-locked', !isL2);
         btnDashiKombu.disabled = !isL2;
@@ -264,7 +334,22 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
 
-      // コロッケ
+      // 宗田節出汁 (Lv.3)
+      if (btnDashiSoda) {
+        btnDashiSoda.classList.toggle('level3-locked', !isL3);
+        btnDashiSoda.disabled = !isL3;
+        const iconEl = document.getElementById('icon-dashi-soda');
+        const textEl = document.getElementById('text-dashi-soda');
+        if (iconEl) {
+          iconEl.className = isL3 ? 'soup-icon soda-icon' : 'soup-icon';
+          iconEl.textContent = isL3 ? '' : '🔒';
+        }
+        if (textEl) {
+          textEl.innerHTML = isL3 ? '宗田節出汁' : '🔒 ？？？';
+        }
+      }
+
+      // コロッケ (Lv.2)
       if (btnTopKorokke) {
         btnTopKorokke.classList.toggle('level2-locked', !isL2);
         btnTopKorokke.disabled = !isL2;
@@ -278,11 +363,28 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
 
-      // 茹で釜ゲージとボタン状態更新（二八 / 十割 / へぎ）
+      // イカ天 (Lv.3)
+      if (btnTopIkaten) {
+        btnTopIkaten.classList.toggle('level3-locked', !isL3);
+        btnTopIkaten.disabled = !isL3;
+        const iconEl = document.getElementById('icon-top-ikaten');
+        const textEl = document.getElementById('text-top-ikaten');
+        if (iconEl) {
+          iconEl.textContent = isL3 ? '🦑' : '🔒';
+        }
+        if (textEl) {
+          textEl.innerHTML = isL3 ? 'イカ天' : '🔒 ？？？';
+        }
+      }
+
+      // 茹で釜ゲージとボタン状態更新（二八 / 十割 / へぎ / 田舎）
       updatePotUI(game.pots.nihachi, potNihachiFill, btnGetNihachi);
       updatePotUI(game.pots.juwari,  potJuwariFill,  btnGetJuwari);
       if (isL2) {
         updatePotUI(game.pots.hegi, potHegiFill, btnGetHegi);
+      }
+      if (isL3) {
+        updatePotUI(game.pots.inaka, potInakaFill, btnGetInaka);
       }
 
       // カウンター席の描画（差分更新）
@@ -349,6 +451,7 @@ document.addEventListener('DOMContentLoaded', () => {
           cardEl.className = 'customer-card';
           if (customer.isGinji) cardEl.classList.add('ginji-card');
           if (customer.isOgin)  cardEl.classList.add('ogin-card');
+          if (customer.isGonzo) cardEl.classList.add('gonzo-card');
           if (customer.isSpicyLover) cardEl.classList.add('spicy-lover-card');
 
           if (customer.state === 'waiting') {
@@ -379,11 +482,11 @@ document.addEventListener('DOMContentLoaded', () => {
               <div class="patience-bar">
                 <div class="patience-fill" style="width: ${pct}%;"></div>
               </div>
+              <button class="btn-serve" id="btn-serve-${seatIndex}">へいお待ち！</button>
               <div class="patience-indicator ${indClass}">
                 <div class="patience-mood-line">${indMood}</div>
                 <div class="patience-time-line">${indTime}</div>
               </div>
-              <button class="btn-serve" id="btn-serve-${seatIndex}">へいお待ち！</button>
             `;
             slotEl.appendChild(cardEl);
 
@@ -406,11 +509,11 @@ document.addEventListener('DOMContentLoaded', () => {
               <div class="escape-bar">
                 <div class="escape-fill" style="width: ${customer.escapeProgress}%;"></div>
               </div>
+              <button class="btn-catch" id="btn-catch-${seatIndex}">お会計！（連打：${customer.catchClicks}/${customer.requiredCatchClicks}）</button>
               <div class="patience-indicator status-danger">
                 <div class="patience-mood-line">🚨 逃走中！</div>
                 <div class="patience-time-line">連打で阻止</div>
               </div>
-              <button class="btn-catch" id="btn-catch-${seatIndex}">お会計！（連打：${customer.catchClicks}/${customer.requiredCatchClicks}）</button>
             `;
             slotEl.appendChild(cardEl);
 
@@ -433,13 +536,14 @@ document.addEventListener('DOMContentLoaded', () => {
         });
       }
 
-      // 盛り付けどんぶりの描画
+      // 盛り付けどんぶりステーションの描画（画像2レイアウト：各丼の脇にネギ・唐辛子・破棄）
       if (bowlsContainer) {
         bowlsContainer.innerHTML = '';
         game.bowls.forEach((bowl, index) => {
-          const bowlEl = document.createElement('div');
-          bowlEl.className = 'bowl-item';
-          if (index === game.selectedBowlIndex) bowlEl.classList.add('selected');
+          const isSelected = index === game.selectedBowlIndex;
+          const unitEl = document.createElement('div');
+          unitEl.className = `bowl-slot-unit ${isSelected ? 'unit-selected' : ''}`;
+          unitEl.setAttribute('data-bowl', index);
 
           const dashiInfo  = bowl.dashi  ? DASHI_TYPES[bowl.dashi]   : null;
           const noodleInfo = bowl.noodle ? NOODLE_TYPES[bowl.noodle] : null;
@@ -457,31 +561,76 @@ document.addEventListener('DOMContentLoaded', () => {
             noodleHtml = `<div class="bowl-noodle-fill" style="background-color: ${noodleInfo.color};">${perfectMark}${noodleInfo.name}</div>`;
           }
 
-          // トッピング要素
+          // トッピング要素（具材）
           let toppingsHtml = '';
           if (bowl.toppings.length > 0) {
             const icons = bowl.toppings.map(t => TOPPING_TYPES[t]?.icon || '').join('');
             toppingsHtml = `<div class="bowl-toppings-icons">${icons}</div>`;
           }
 
+          // 薬味インジケーター（ネギ・唐辛子の状態）
+          const negiTxt = bowl.negiLevel === 'mashi' ? '🥬増' : (bowl.negiLevel === 'nashi' ? '🥬抜' : '🥬');
+          const chiliTxt = bowl.togarashiLevel === 'mashi' ? '🌶️増' : (bowl.togarashiLevel === 'nashi' ? '🌶️抜' : '🌶️');
+          const spiceHtml = `<div class="bowl-spice-indicators">${negiTxt} ${chiliTxt}</div>`;
+
           // 出汁だけ入っている/具なしの時のテキスト表示補助
           let emptyCenterText = '';
           if (!noodleInfo && !dashiInfo) {
             emptyCenterText = `<span style="z-index:4; font-size:0.75rem; color:#888; font-weight:bold;">空</span>`;
           } else if (dashiInfo && !noodleInfo) {
-            emptyCenterText = `<span style="z-index:4; font-size:0.75rem; color:#fff; font-weight:bold; text-shadow:1px 1px 2px #000;">🥣${dashiInfo.name.replace('出汁','')}</span>`;
+            emptyCenterText = `<span style="z-index:4; font-size:0.72rem; color:#fff; font-weight:bold; text-shadow:1px 1px 2px #000;">🥣${dashiInfo.name.replace('出汁','')}</span>`;
           }
 
-          bowlEl.innerHTML = `
-            ${soupHtml}
-            ${noodleHtml}
-            ${toppingsHtml}
-            ${emptyCenterText}
-            <div class="bowl-select-tag">丼 ${index + 1}</div>
+          // 各薬味ボタンのアクティブ判定
+          const isNegiMashi = bowl.negiLevel === 'mashi';
+          const isNegiNashi = bowl.negiLevel === 'nashi';
+          const isChiliMashi = bowl.togarashiLevel === 'mashi';
+          const isChiliNashi = bowl.togarashiLevel === 'nashi';
+
+          unitEl.innerHTML = `
+            <!-- 左カラム: ネギ増し/抜き + 高さ揃えスペーサー -->
+            <div class="bowl-side-col bowl-left-col">
+              <button class="bowl-action-btn negi-side-btn ${isNegiMashi ? 'active-spice' : ''}" 
+                      data-action="negi-mashi" data-bowl="${index}" title="丼${index + 1}: ネギ増し">
+                🥬+
+              </button>
+              <button class="bowl-action-btn negi-side-btn ${isNegiNashi ? 'active-spice' : ''}" 
+                      data-action="negi-nashi" data-bowl="${index}" title="丼${index + 1}: ネギ抜き">
+                🥬✕
+              </button>
+              <div class="bowl-side-spacer"></div>
+            </div>
+
+            <!-- 中央カラム: どんぶり本体 -->
+            <div class="bowl-center-col">
+              <div class="bowl-item ${isSelected ? 'selected' : ''}" data-bowl="${index}">
+                ${soupHtml}
+                ${noodleHtml}
+                ${toppingsHtml}
+                ${spiceHtml}
+                ${emptyCenterText}
+              </div>
+              <div class="bowl-select-tag">丼 ${index + 1}</div>
+            </div>
+
+            <!-- 右カラム: 唐辛子増し/抜き ＆ 破棄 -->
+            <div class="bowl-side-col bowl-right-col">
+              <button class="bowl-action-btn chili-side-btn chili-mashi-btn ${isChiliMashi ? 'active-spice' : ''}" 
+                      data-action="chili-mashi" data-bowl="${index}" title="丼${index + 1}: 唐辛子増し">
+                🌶️+
+              </button>
+              <button class="bowl-action-btn chili-side-btn ${isChiliNashi ? 'active-spice' : ''}" 
+                      data-action="chili-nashi" data-bowl="${index}" title="丼${index + 1}: 唐辛子抜き">
+                🌶️✕
+              </button>
+              <button class="bowl-trash-circle-btn" data-action="trash" data-bowl="${index}" title="丼${index + 1}を破棄">
+                <span class="trash-icon">🗑️</span>
+                <span class="trash-txt">破棄</span>
+              </button>
+            </div>
           `;
 
-          bowlEl.addEventListener('click', () => game.selectBowl(index));
-          bowlsContainer.appendChild(bowlEl);
+          bowlsContainer.appendChild(unitEl);
         });
       }
 
@@ -511,32 +660,41 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // トースト表示
+  // トースト表示（画面上部中央に最新1件を表示、ゲームプレイを遮らない）
+  let toastTimer = null;
   function showToastMessage(text, type = 'info') {
+    if (!toastContainer) return;
+    toastContainer.innerHTML = '';
+    if (toastTimer) clearTimeout(toastTimer);
+
     const toast = document.createElement('div');
     toast.className = `toast toast-${type}`;
     toast.textContent = text;
     toastContainer.appendChild(toast);
 
-    setTimeout(() => {
+    requestAnimationFrame(() => {
       toast.classList.add('show');
-    }, 10);
+    });
 
-    setTimeout(() => {
+    toastTimer = setTimeout(() => {
       toast.classList.remove('show');
-      setTimeout(() => toast.remove(), 300);
-    }, 2500);
+      setTimeout(() => toast.remove(), 250);
+    }, 1600);
   }
 
   // 立食い師襲来カットイン演出
   function showCutinNotice(msg) {
-    if (msg.includes('お銀')) {
-      if (cutinTitle)  cutinTitle.textContent  = '⚡ 立食い師 襲来 ⚡';
+    if (cutinTitle) cutinTitle.textContent = '⚡ 立食い師 襲来 ⚡';
+
+    if (msg.includes('権蔵')) {
+      if (cutinAvatar) cutinAvatar.textContent = '🦑';
+      if (cutinName)   cutinName.textContent   = 'イカ天の権蔵';
+      if (cutinText)   cutinText.textContent   = '「……イカ天はな、カラッと揚がってなきゃ話にならねぇ。」';
+    } else if (msg.includes('お銀')) {
       if (cutinAvatar) cutinAvatar.textContent = '💃';
       if (cutinName)   cutinName.textContent   = 'コロッケのお銀';
       if (cutinText)   cutinText.textContent   = '「コロッケはね、サクサクじゃないと意味がないの。」';
     } else {
-      if (cutinTitle)  cutinTitle.textContent  = '⚡ 立食い師 襲来 ⚡';
       if (cutinAvatar) cutinAvatar.textContent = '🕵️‍♂️';
       if (cutinName)   cutinName.textContent   = '月見の銀二';
       if (cutinText)   cutinText.textContent   = '「……いつもの、かつお十割の月見だ。」';
@@ -564,7 +722,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 2200);
   }
 
-  // 目標金額1万円到達時のポップアップ
+  // 目標金額1万円到達時（第1ステージクリア）のポップアップ
   function handleGoalReached(game) {
     currentModalMode = 'goal_reached';
     sound.playFanfare();
@@ -575,12 +733,12 @@ document.addEventListener('DOMContentLoaded', () => {
     modalBody.innerHTML = `
       <div class="result-box success">
         <h3>🎉 第1ステージ 目標1万円達成！ 🎉</h3>
-        <p class="score-result">累計売上: <span>${game.score}円</span></p>
+        <p class="score-result">累計売上: <span>${game.score.toLocaleString()}円</span></p>
         <p>営業日数: ${game.day} 日目 | 提供客数: ${game.stats.servedCount} 人 | 立食い師撃退数: ${game.stats.ginjiDefeated} 人</p>
         <p class="comment">
           見事目標金額の1万円に達しました！<br>
           <small style="color: #ffd166;">※進行状況は自動的にオートセーブされました。</small><br><br>
-          「続ける」を押すと、新食材（こんぶ出汁・へぎ蕎麦・コロッケ）と強敵『コロッケのお銀』が登場する<b>第二ステージ</b>が開始します！
+          「続ける」を押すと、新食材（こんぶ出汁・へぎ蕎麦・コロッケ）と立食い師『コロッケのお銀』が登場する<b>第二ステージ（目標2万円）</b>が開始します！
         </p>
       </div>
     `;
@@ -589,18 +747,44 @@ document.addEventListener('DOMContentLoaded', () => {
     btnContinueGame.classList.remove('hidden');
   }
 
+  // 目標金額2万円到達時（第2ステージクリア）のポップアップ
   function handleStage2Clear(game) {
     currentModalMode = 'stage2_clear';
     sound.playFanfare();
+    confetti({ particleCount: 180, spread: 100, origin: { y: 0.6 } });
+
+    modalOverlay.classList.remove('hidden');
+    modalTitle.textContent = '第二ステージ 目標達成！';
+    modalBody.innerHTML = `
+      <div class="result-box success">
+        <h3>🎉 第2ステージ 目標2万円達成！ 🎉</h3>
+        <p class="score-result">累計売上: <span>${game.score.toLocaleString()}円</span></p>
+        <p>営業日数: ${game.day} 日目 | 提供客数: ${game.stats.servedCount} 人 | 立食い師撃退数: ${game.stats.ginjiDefeated} 人</p>
+        <p class="comment">
+          「コロッケのお銀」の罠を見事かわし、目標売上2万円を突破！<br>
+          <small style="color: #ffd166;">※進行状況は自動的にオートセーブされました。</small><br><br>
+          「続ける」を押すと、新食材（<b>宗田節出汁・田舎そば・イカ天</b>）と歴戦の立食い師<b>『イカ天の権蔵』</b>が待ち受ける<b>第三ステージ（目標3万円）</b>に突入します！
+        </p>
+      </div>
+    `;
+    btnStartGame.textContent = '最初から始める';
+    btnContinueGame.textContent = '▶️ 続ける（第三ステージ開始）';
+    btnContinueGame.classList.remove('hidden');
+  }
+
+  // 目標金額3万円到達時（第3ステージクリア ＆ 全ステージ制覇エンディング）
+  function handleStage3Clear(game) {
+    currentModalMode = 'stage3_clear';
+    sound.playFanfare();
 
     // 連続花吹雪（エンディング演出）
-    const duration = 2500;
+    const duration = 3000;
     const animationEnd = Date.now() + duration;
     const interval = setInterval(() => {
       const timeLeft = animationEnd - Date.now();
       if (timeLeft <= 0) return clearInterval(interval);
       confetti({
-        particleCount: 40,
+        particleCount: 50,
         startVelocity: 30,
         spread: 360,
         origin: { x: Math.random(), y: Math.random() - 0.2 }
@@ -609,13 +793,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 称号決定ロジック
     let rankName = '🍜 天下一品・立ち食い蕎麦職人';
-    if (game.stats.ginjiDefeated >= 4 && game.day <= 3) {
+    if (game.stats.ginjiDefeated >= 6 && game.day <= 4) {
       rankName = '🌟 神速無敗の立ち食い仙人';
-    } else if (game.stats.ginjiDefeated >= 4) {
+    } else if (game.stats.ginjiDefeated >= 5) {
       rankName = '⚔️ 立食い師キラー・蕎麦奉行';
-    } else if (game.day <= 2) {
+    } else if (game.day <= 3) {
       rankName = '⚡ 電光石火のワンオペ大将';
-    } else if (game.score >= 25000) {
+    } else if (game.score >= 38000) {
       rankName = '💰 億万長者・蕎麦御殿当主';
     }
 
@@ -625,8 +809,8 @@ document.addEventListener('DOMContentLoaded', () => {
       <div class="ending-box">
         <div class="ending-badge">✨ 堂々完結 / GAME CLEAR ✨</div>
         <div class="ending-story">
-          「月見の銀二」や「コロッケのお銀」ら伝説の立食い師たちをその神速の茹で技と激辛七味で見事ねじ伏せ、目標売上<b>20,000円</b>の大台を突破！<br>
-          江戸前立ち食い蕎麦の粋と情熱を極めたあなたの店は、今や天下に轟く伝説の名店となった――。
+          「月見の銀二」「コロッケのお銀」、そして「イカ天の権蔵」ら伝説の立食い師たちを、その神速の茹で技と唐辛子増しで見事ねじ伏せ、大目標売上<b>30,000円</b>の金字塔を打ち立てた！<br>
+          江戸前立ち食い蕎麦の粋と情熱を極めたあなたの店は、今や日本全国に轟く伝説の名城となった――。
         </div>
 
         <div class="ending-stats-grid">
@@ -669,7 +853,7 @@ document.addEventListener('DOMContentLoaded', () => {
       sound.playFanfare();
       confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
 
-      const isEndless = game.stage >= 3;
+      const isEndless = game.stage >= 4;
       const stageName = isEndless ? 'エンドレス営業' : `第${game.stage}ステージ`;
       const scoreSub = isEndless ? '' : ` (目標: ${game.targetScore.toLocaleString()}円)`;
 
@@ -731,9 +915,11 @@ document.addEventListener('DOMContentLoaded', () => {
       <div class="instruction-box">
         <h4>⚠️ イレギュラー警報：立食い師たちの襲来！</h4>
         <ul>
-          <li><b>『月見の銀二』</b>：注文は「かつお出汁 + 十割そば + ネギ + 生卵」</li>
-          <li><b>『？？？（謎の立食い師）』</b>（第2ステージ登場）：目標1万円達成後に現れる強敵！</li>
-          <li>撃退法：<b>【激辛七味】</b>を入れるか、<b>ジャスト茹で</b>で感動させよ！</li>
+          <li><b>『月見の銀二』</b>：かつお出汁 + 十割そば + 月見（第1ステージ目標1万円）</li>
+          <li><b>『コロッケのお銀』</b>：こんぶ出汁 + 二八そば + コロッケ（第2ステージ目標2万円）</li>
+          <li><b>『イカ天の権蔵』</b>：宗田節出汁 + 田舎そば + イカ天（第3ステージ目標3万円）</li>
+          <li>撃退法：<b>【唐辛子増し】</b>にして提供するか、<b>ジャスト湯切り</b>で感動させよ！</li>
+          <li>※ネギと唐辛子は<b>全丼デフォルト</b>で投入済。注文に応じて「増し/抜き」で調整！</li>
           <li>逃げ出したら<b>「お会計」連打</b>で捕まえろ！</li>
         </ul>
       </div>

@@ -3,10 +3,12 @@
 export class Bowl {
   constructor(id) {
     this.id = id;
-    this.dashi = null; // 'katsuo' | 'niboshi'
-    this.noodle = null; // 'nihachi' | 'juwari'
+    this.dashi = null; // 'katsuo' | 'niboshi' | 'kombu' | 'soda'
+    this.noodle = null; // 'nihachi' | 'juwari' | 'hegi' | 'inaka'
     this.isPerfectCooked = false; // パーフェクトな茹で加減
-    this.toppings = []; // ['negi', 'raw_egg', 'spicy_chili']
+    this.toppings = []; // ['raw_egg', 'korokke', 'ikaten']
+    this.negiLevel = 'normal'; // 'normal' | 'nashi' | 'mashi'
+    this.togarashiLevel = 'normal'; // 'normal' | 'nashi' | 'mashi'
   }
 
   isReady() {
@@ -18,6 +20,8 @@ export class Bowl {
     this.noodle = null;
     this.isPerfectCooked = false;
     this.toppings = [];
+    this.negiLevel = 'normal';
+    this.togarashiLevel = 'normal';
   }
 }
 
