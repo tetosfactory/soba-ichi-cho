@@ -316,7 +316,7 @@ export class SobaGame {
     if (this.ginjiSpawnedToday < 3 && Math.random() < 0.35) {
       this.ginjiSpawnedToday++;
       if (this.level >= 4) {
-        // 第4ステージ: 丈二、権蔵、お銀、銀二
+        // 第4ステージ: 丈二、権蔵、揚羽、銀二
         const rand = Math.random();
         if (rand < 0.35) {
           isJoji = true;
@@ -329,7 +329,7 @@ export class SobaGame {
         } else if (rand < 0.80) {
           isOgin = true;
           sound.playGinjiAlert();
-          this.ui.showCutin('立食い師『コロッケのお銀』が現れた！無銭飲食に気をつけろ！');
+          this.ui.showCutin('立食い師『コロッケの揚羽』が現れた！無銭飲食に気をつけろ！');
         } else {
           isGinji = true;
           sound.playGinjiAlert();
@@ -344,7 +344,7 @@ export class SobaGame {
         } else if (rand < 0.67) {
           isOgin = true;
           sound.playGinjiAlert();
-          this.ui.showCutin('立食い師『コロッケのお銀』が現れた！無銭飲食に気をつけろ！');
+          this.ui.showCutin('立食い師『コロッケの揚羽』が現れた！無銭飲食に気をつけろ！');
         } else {
           isGinji = true;
           sound.playGinjiAlert();
@@ -353,7 +353,7 @@ export class SobaGame {
       } else if (this.level >= 2 && Math.random() < 0.5) {
         isOgin = true;
         sound.playGinjiAlert();
-        this.ui.showCutin('立食い師『コロッケのお銀』が現れた！無銭飲食に気をつけろ！');
+        this.ui.showCutin('立食い師『コロッケの揚羽』が現れた！無銭飲食に気をつけろ！');
       } else {
         isGinji = true;
         sound.playGinjiAlert();
@@ -580,7 +580,7 @@ export class SobaGame {
     if (this.nekoTimer)  { clearInterval(this.nekoTimer);  this.nekoTimer  = null; }
   }
 
-  // 泥棒猫「骨折」発生: 仔備中の一番左の丸にトッピングを盗む
+  // 横取り猫「小鉄」発生: 盛り付け済みの丼からトッピングを横取りする
   _triggerNekoBoratu() {
     if (!this.isPlaying) return;
 

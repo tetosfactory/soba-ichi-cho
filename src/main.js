@@ -753,10 +753,10 @@ document.addEventListener('DOMContentLoaded', () => {
       if (cutinAvatar) cutinAvatar.textContent = '🦑';
       if (cutinName)   cutinName.textContent   = 'イカ天の権蔵';
       if (cutinText)   cutinText.textContent   = '「……イカ天はな、カラッと揚がってなきゃ話にならねぇ。」';
-    } else if (msg.includes('お銀')) {
-      if (cutinAvatar) cutinAvatar.textContent = '💃';
-      if (cutinName)   cutinName.textContent   = 'コロッケのお銀';
-      if (cutinText)   cutinText.textContent   = '「コロッケはね、サクサクじゃないと意味がないの。」';
+    } else if (msg.includes('揚羽') || msg.includes('お銀')) {
+      if (cutinAvatar) cutinAvatar.textContent = '🦋';
+      if (cutinName)   cutinName.textContent   = 'コロッケの揚羽';
+      if (cutinText)   cutinText.textContent   = '「コロッケはね、サクサクじゃないと意味がないの。揚げ加減、見させてもらうわよ。」';
     } else {
       if (cutinAvatar) cutinAvatar.textContent = '🕵️‍♂️';
       if (cutinName)   cutinName.textContent   = '月見の銀二';
@@ -785,6 +785,20 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 2200);
   }
 
+  // 横取り猫「小鉄」の襲来演出
+  function showNekoCutin(toppingName, bowlNum) {
+    showToastMessage(`🐾 ニャーン！横取り猫の『小鉄』に丼${bowlNum}の【${toppingName}】を横取りされた！`, 'warning');
+    if (cutinTitle)  cutinTitle.textContent  = '🐾 トッピング横取り！ 🐾';
+    if (cutinAvatar) cutinAvatar.textContent = '🐱🐾';
+    if (cutinName)   cutinName.textContent   = '横取り猫の小鉄';
+    if (cutinText)   cutinText.textContent   = `「ニャ〜オ！（丼${bowlNum}の${toppingName}をサッとくわえて逃げ去った！）」`;
+
+    cutinOverlay.classList.remove('hidden');
+    setTimeout(() => {
+      cutinOverlay.classList.add('hidden');
+    }, 2000);
+  }
+
   // 目標金額1万円到達時（第1ステージクリア）のポップアップ
   function handleGoalReached(game) {
     currentModalMode = 'goal_reached';
@@ -801,7 +815,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <p class="comment">
           見事目標金額の1万円に達しました！<br>
           <small style="color: #ffd166;">※進行状況は自動的にオートセーブされました。</small><br><br>
-          「続ける」を押すと、新食材（こんぶ出汁・へぎ蕎麦・コロッケ）と立食い師『コロッケのお銀』が登場する<b>第二ステージ（目標2万円）</b>が開始します！
+          「続ける」を押すと、新食材（こんぶ出汁・へぎ蕎麦・コロッケ）と立食い師『コロッケの揚羽』が登場する<b>第二ステージ（目標2万円）</b>が開始します！
         </p>
       </div>
     `;
@@ -824,7 +838,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <p class="score-result">累計売上: <span>${game.score.toLocaleString()}円</span></p>
         <p>営業日数: ${game.day} 日目 | 提供客数: ${game.stats.servedCount} 人 | 立食い師撃退数: ${game.stats.ginjiDefeated} 人</p>
         <p class="comment">
-          「コロッケのお銀」の罠を見事かわし、目標売上2万円を突破！<br>
+          「コロッケの揚羽」の罠を見事かわし、目標売上2万円を突破！<br>
           <small style="color: #ffd166;">※進行状況は自動的にオートセーブされました。</small><br><br>
           「続ける」を押すと、新食材（<b>宗田節出汁・田舎そば・イカ天</b>）と歴戦の立食い師<b>『イカ天の権蔵』</b>が待ち受ける<b>第三ステージ（目標3万円）</b>に突入します！
         </p>
@@ -899,7 +913,7 @@ document.addEventListener('DOMContentLoaded', () => {
       <div class="ending-box">
         <div class="ending-badge">✨ 堂々完結 / GRAND FINALE ✨</div>
         <div class="ending-story">
-          「月見の銀二」「コロッケのお銀」「イカ天の権蔵」、そして最強最後の刺客「海老天の丈二」ら全立食い師たちを、その神速の茹で技と激辛撃退で見事ねじ伏せ、大目標売上<b>40,000円</b>の至高の金字塔を打ち立てた！<br>
+          「月見の銀二」「コロッケの揚羽」「イカ天の権蔵」、そして最強最後の刺客「海老天の丈二」ら全立食い師たちを、その神速の茹で技と激辛撃退で見事ねじ伏せ、大目標売上<b>40,000円</b>の至高の金字塔を打ち立てた！<br>
           江戸前立ち食い蕎麦の粋と情熱を極めたあなたの店は、日本全土に語り継がれる不滅の伝説となった――。
         </div>
 
@@ -1006,9 +1020,10 @@ document.addEventListener('DOMContentLoaded', () => {
         <h4>⚠️ イレギュラー警報：立食い師たちの襲来！</h4>
         <ul>
           <li><b>『月見の銀二』</b>：かつお出汁 + 十割そば + 月見（第1ステージ目標1万円）</li>
-          <li><b>『コロッケのお銀』</b>：こんぶ出汁 + 二八そば + コロッケ（第2ステージ目標2万円）</li>
+          <li><b>『コロッケの揚羽』</b>：こんぶ出汁 + 二八そば + コロッケ（第2ステージ目標2万円）</li>
           <li><b>『イカ天の権蔵』</b>：宗田節出汁 + 田舎そば + イカ天（第3ステージ目標3万円）</li>
           <li><b>『海老天の丈二』</b>：宗田節出汁 + 田舎そば + 海老天（第4ステージ目標4万円）</li>
+          <li>🐾<b>『横取り猫の小鉄』</b>：第2ステージ以降、丼に乗せた具材をサッと横取り！</li>
           <li>撃退法：<b>【唐辛子増し】</b>にして提供するか、<b>ジャスト湯切り</b>で感動させよ！</li>
           <li>※ネギと唐辛子は<b>全丼デフォルト</b>で投入済。注文に応じて「増し/抜き」で調整！</li>
           <li>逃げ出したら<b>「お会計」連打</b>で捕まえろ！（※丈二は足が速く捕縛難度UP）</li>
