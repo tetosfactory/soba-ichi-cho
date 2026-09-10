@@ -66,6 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnTopEgg       = document.getElementById('btn-top-egg');
   const btnTopKorokke   = document.getElementById('btn-top-korokke');
   const btnTopIkaten    = document.getElementById('btn-top-ikaten');
+  const btnTopEbiten    = document.getElementById('btn-top-ebiten');
 
   // 初期スロットDOMの固定生成（チラつき防止）
   for (let i = 0; i < 3; i++) {
@@ -94,23 +95,25 @@ document.addEventListener('DOMContentLoaded', () => {
     showToast: (msg, type = 'info') => showToastMessage(msg, type),
     showCutin: (msg) => showCutinNotice(msg),
     showSpecialEffect: (type, msg) => showSpecial(type, msg),
+    showNeko: (toppingName, bowlNum) => showNekoCutin(toppingName, bowlNum),
     onGameOver: (isSuccess, game) => handleGameOver(isSuccess, game),
     onGoalReached: (game) => handleGoalReached(game),
     onStage2Clear: (game) => handleStage2Clear(game),
-    onStage3Clear: (game) => handleStage3Clear(game)
+    onStage3Clear: (game) => handleStage3Clear(game),
+    onStage4Clear: (game) => handleStage4Clear(game)
   };
 
   const game = new SobaGame(uiCallbacks);
   window.game = game;
 
-  let currentModalMode = 'title'; // 'title' | 'day_clear' | 'goal_reached' | 'stage2_clear' | 'stage3_clear' | 'game_over'
+  let currentModalMode = 'title'; // 'title' | 'day_clear' | 'goal_reached' | 'stage2_clear' | 'stage3_clear' | 'stage4_clear' | 'game_over'
 
   // オートセーブデータのUI更新
   function updateSaveDataUI() {
     const saveData = game.loadProgress();
     if (saveData && btnContinueGame) {
       btnContinueGame.classList.remove('hidden');
-      const stageText = (saveData.stage >= 4) ? 'エンドレス営業' : `第${saveData.stage || 1}ステージ`;
+      const stageText = (saveData.stage >= 5) ? 'エンドレス営業' : `第${saveData.stage || 1}ステージ`;
       const dayNum = saveData.day || 1;
       btnContinueGame.textContent = `▶️ 続きから始める (${dayNum}日目 / ${stageText} / 売上${saveData.score.toLocaleString()}円)`;
     } else if (btnContinueGame) {
@@ -120,6 +123,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 初期画面でのセーブチェック
   updateSaveDataUI();
+
+  // URLクエリによるデバッグステージ起動サポート (?debugStage=4)
+  const urlParams = new URLSearchParams(window.location.search);
+  const debugStageParam = urlParams.get('debugStage');
+  if (debugStageParam) {
+    const dStage = parseInt(debugStageParam, 10);
+    if (dStage >= 1 && dStage <= 5) {
+      game.stage = dStage;
+      game.level = Math.min(4, dStage);
+      if (dStage === 4) {
+        game.targetScore = 40000;
+        game.score = 39200; // あと1杯でクリア
+      }
+    }
+  }
 
   // 全画面リクエスト（ゲーム開始時）
   function tryRequestFullscreen() {
@@ -156,6 +174,9 @@ document.addEventListener('DOMContentLoaded', () => {
         currentModalMode = 'playing';
         game.startStage3();
       } else if (currentModalMode === 'stage3_clear') {
+        currentModalMode = 'playing';
+        game.startStage4();
+      } else if (currentModalMode === 'stage4_clear') {
         currentModalMode = 'playing';
         game.startEndless();
       } else if (currentModalMode === 'day_clear') {
@@ -219,6 +240,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     game.addTopping('ikaten');
   });
+  if (btnTopEbiten) {
+    btnTopEbiten.addEventListener('click', () => {
+      if (game.level < 4) {
+        showToastMessage('🔒 海老天は第3ステージクリア（目標3万円達成）後、第4ステージで解放されます！', 'warning');
+        return;
+      }
+      game.addTopping('ebiten');
+    });
+  }
 
   // 丼ステーションのイベント委任（ネギ増し/抜き、唐辛子増し/抜き、破棄、丼選択）
   bowlsContainer.addEventListener('click', (e) => {
@@ -291,7 +321,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function render(game) {
     try {
       // ヘッダー情報
-      const isEndless = game.stage >= 4;
+      const isEndless = game.stage >= 5;
       if (statMode) statMode.textContent = diffNames[game.difficulty] || 'かんたん';
       if (statDay) statDay.textContent = isEndless ? `${game.day}日目(∞)` : `${game.day}日目(第${game.stage})`;
       if (statTime) statTime.textContent = `${game.timeRemaining}秒`;
@@ -302,6 +332,7 @@ document.addEventListener('DOMContentLoaded', () => {
       // 解放状態のUI切り替え（伏せ字 ↔ 解放）
       const isL2 = game.level >= 2;
       const isL3 = game.level >= 3;
+      const isL4 = game.level >= 4;
 
       // へぎ蕎麦（茹で釜 Lv.2）
       if (potHegiEl) potHegiEl.classList.toggle('level2-locked', !isL2);
@@ -374,6 +405,20 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (textEl) {
           textEl.innerHTML = isL3 ? 'イカ天' : '🔒 ？？？';
+        }
+      }
+
+      // 海老天 (Lv.4)
+      if (btnTopEbiten) {
+        btnTopEbiten.classList.toggle('level4-locked', !isL4);
+        btnTopEbiten.disabled = !isL4;
+        const iconEl = document.getElementById('icon-top-ebiten');
+        const textEl = document.getElementById('text-top-ebiten');
+        if (iconEl) {
+          iconEl.textContent = isL4 ? '🦐' : '🔒';
+        }
+        if (textEl) {
+          textEl.innerHTML = isL4 ? '海老天' : '🔒 ？？？';
         }
       }
 
@@ -452,6 +497,7 @@ document.addEventListener('DOMContentLoaded', () => {
           if (customer.isGinji) cardEl.classList.add('ginji-card');
           if (customer.isOgin)  cardEl.classList.add('ogin-card');
           if (customer.isGonzo) cardEl.classList.add('gonzo-card');
+          if (customer.isJoji)  cardEl.classList.add('joji-card');
           if (customer.isSpicyLover) cardEl.classList.add('spicy-lover-card');
 
           if (customer.state === 'waiting') {
@@ -640,21 +686,34 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function updatePotUI(pot, fillEl, btnGetEl) {
-    if (!pot || !fillEl || !btnGetEl) return;
+    if (!fillEl || !btnGetEl) return;
     fillEl.style.width = `${pot.progress}%`;
-    fillEl.classList.toggle('in-perfect', pot.state === 'boiling' && pot.isPerfect);
-    btnGetEl.disabled = pot.state === 'idle';
 
-    if (pot.state === 'boiling' && pot.isPerfect) {
+    const isPerfectZone = pot.isPerfect;
+    if (isPerfectZone) {
+      fillEl.classList.add('perfect-fill');
+    } else {
+      fillEl.classList.remove('perfect-fill');
+    }
+
+    if (pot.state === 'idle') {
+      btnGetEl.disabled = true;
+      btnGetEl.textContent = '丼へ盛る';
+      btnGetEl.classList.remove('btn-get-perfect');
+    } else if (pot.state === 'ready' && isPerfectZone) {
+      btnGetEl.disabled = false;
       btnGetEl.textContent = '🌟今すぐ湯切り！';
       btnGetEl.classList.add('btn-get-perfect');
     } else if (pot.state === 'boiling') {
+      btnGetEl.disabled = false;
       btnGetEl.textContent = '湯切りする';
       btnGetEl.classList.remove('btn-get-perfect');
     } else if (pot.state === 'ready') {
+      btnGetEl.disabled = false;
       btnGetEl.textContent = '丼へ盛る';
       btnGetEl.classList.remove('btn-get-perfect');
     } else {
+      btnGetEl.disabled = true;
       btnGetEl.textContent = '丼へ盛る';
       btnGetEl.classList.remove('btn-get-perfect');
     }
@@ -686,7 +745,11 @@ document.addEventListener('DOMContentLoaded', () => {
   function showCutinNotice(msg) {
     if (cutinTitle) cutinTitle.textContent = '⚡ 立食い師 襲来 ⚡';
 
-    if (msg.includes('権蔵')) {
+    if (msg.includes('丈二')) {
+      if (cutinAvatar) cutinAvatar.textContent = '🍤🕶️';
+      if (cutinName)   cutinName.textContent   = '海老天の丈二';
+      if (cutinText)   cutinText.textContent   = '「……一本揚げの海老天こそ蕎麦の華。見極めさせてもらおうか。」';
+    } else if (msg.includes('権蔵')) {
       if (cutinAvatar) cutinAvatar.textContent = '🦑';
       if (cutinName)   cutinName.textContent   = 'イカ天の権蔵';
       if (cutinText)   cutinText.textContent   = '「……イカ天はな、カラッと揚がってなきゃ話にならねぇ。」';
@@ -772,45 +835,72 @@ document.addEventListener('DOMContentLoaded', () => {
     btnContinueGame.classList.remove('hidden');
   }
 
-  // 目標金額3万円到達時（第3ステージクリア ＆ 全ステージ制覇エンディング）
+  // 目標金額3万円到達時（第3ステージクリア）のポップアップ
   function handleStage3Clear(game) {
     currentModalMode = 'stage3_clear';
     sound.playFanfare();
+    confetti({ particleCount: 180, spread: 100, origin: { y: 0.6 } });
 
-    // 連続花吹雪（エンディング演出）
-    const duration = 3000;
+    modalOverlay.classList.remove('hidden');
+    modalTitle.textContent = '第三ステージ 目標達成！';
+    modalBody.innerHTML = `
+      <div class="result-box success">
+        <h3>🎉 第3ステージ 目標3万円達成！ 🎉</h3>
+        <p class="score-result">累計売上: <span>${game.score.toLocaleString()}円</span></p>
+        <p>営業日数: ${game.day} 日目 | 提供客数: ${game.stats.servedCount} 人 | 立食い師撃退数: ${game.stats.ginjiDefeated} 人</p>
+        <p class="comment">
+          荒くれ者「イカ天の権蔵」を納得させ、大台の目標売上3万円を突破！<br>
+          <small style="color: #ffd166;">※進行状況は自動的にオートセーブされました。</small><br><br>
+          いよいよ最終決戦！「続ける」を押すと、新トッピング（<b>海老天 🦐</b>）と最強の立食い師<b>『海老天の丈二』</b>が待ち受ける<b>極限の第4ステージ（目標4万円）</b>に突入します！
+        </p>
+      </div>
+    `;
+    btnStartGame.textContent = '最初から始める';
+    btnContinueGame.textContent = '▶️ 続ける（第4ステージ開始！）';
+    btnContinueGame.classList.remove('hidden');
+  }
+
+  // 目標金額4万円到達時（第4ステージクリア ＆ 真・全ステージ制覇グランドフィナーレ）
+  function handleStage4Clear(game) {
+    currentModalMode = 'stage4_clear';
+    sound.playFanfare();
+
+    // 連続花吹雪（グランドフィナーレ演出）
+    const duration = 3500;
     const animationEnd = Date.now() + duration;
     const interval = setInterval(() => {
       const timeLeft = animationEnd - Date.now();
       if (timeLeft <= 0) return clearInterval(interval);
       confetti({
-        particleCount: 50,
-        startVelocity: 30,
+        particleCount: 60,
+        startVelocity: 35,
         spread: 360,
         origin: { x: Math.random(), y: Math.random() - 0.2 }
       });
-    }, 250);
+    }, 220);
 
     // 称号決定ロジック
     let rankName = '🍜 天下一品・立ち食い蕎麦職人';
-    if (game.stats.ginjiDefeated >= 6 && game.day <= 4) {
-      rankName = '🌟 神速無敗の立ち食い仙人';
-    } else if (game.stats.ginjiDefeated >= 5) {
-      rankName = '⚔️ 立食い師キラー・蕎麦奉行';
-    } else if (game.day <= 3) {
-      rankName = '⚡ 電光石火のワンオペ大将';
-    } else if (game.score >= 38000) {
-      rankName = '💰 億万長者・蕎麦御殿当主';
+    if (game.stats.ginjiDefeated >= 8 && game.day <= 5) {
+      rankName = '🌟 神速無敗の立ち食い神主';
+    } else if (game.stats.ginjiDefeated >= 7) {
+      rankName = '⚔️ 天下無双のワンオペ覇王';
+    } else if (game.day <= 4) {
+      rankName = '⚡ 電光石火の立ち食いレジェンド';
+    } else if (game.score >= 50000) {
+      rankName = '💰 巨万の富・江戸前蕎麦御殿当主';
+    } else {
+      rankName = '👑 立ち食い蕎麦の生ける伝説';
     }
 
     modalOverlay.classList.remove('hidden');
-    modalTitle.textContent = '🏆 祝・全ステージ制覇！ 🏆';
+    modalTitle.textContent = '🏆 祝・全ステージ完全制覇！ 🏆';
     modalBody.innerHTML = `
       <div class="ending-box">
-        <div class="ending-badge">✨ 堂々完結 / GAME CLEAR ✨</div>
+        <div class="ending-badge">✨ 堂々完結 / GRAND FINALE ✨</div>
         <div class="ending-story">
-          「月見の銀二」「コロッケのお銀」、そして「イカ天の権蔵」ら伝説の立食い師たちを、その神速の茹で技と唐辛子増しで見事ねじ伏せ、大目標売上<b>30,000円</b>の金字塔を打ち立てた！<br>
-          江戸前立ち食い蕎麦の粋と情熱を極めたあなたの店は、今や日本全国に轟く伝説の名城となった――。
+          「月見の銀二」「コロッケのお銀」「イカ天の権蔵」、そして最強最後の刺客「海老天の丈二」ら全立食い師たちを、その神速の茹で技と激辛撃退で見事ねじ伏せ、大目標売上<b>40,000円</b>の至高の金字塔を打ち立てた！<br>
+          江戸前立ち食い蕎麦の粋と情熱を極めたあなたの店は、日本全土に語り継がれる不滅の伝説となった――。
         </div>
 
         <div class="ending-stats-grid">
@@ -853,7 +943,7 @@ document.addEventListener('DOMContentLoaded', () => {
       sound.playFanfare();
       confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
 
-      const isEndless = game.stage >= 4;
+      const isEndless = game.stage >= 5;
       const stageName = isEndless ? 'エンドレス営業' : `第${game.stage}ステージ`;
       const scoreSub = isEndless ? '' : ` (目標: ${game.targetScore.toLocaleString()}円)`;
 
@@ -918,9 +1008,10 @@ document.addEventListener('DOMContentLoaded', () => {
           <li><b>『月見の銀二』</b>：かつお出汁 + 十割そば + 月見（第1ステージ目標1万円）</li>
           <li><b>『コロッケのお銀』</b>：こんぶ出汁 + 二八そば + コロッケ（第2ステージ目標2万円）</li>
           <li><b>『イカ天の権蔵』</b>：宗田節出汁 + 田舎そば + イカ天（第3ステージ目標3万円）</li>
+          <li><b>『海老天の丈二』</b>：宗田節出汁 + 田舎そば + 海老天（第4ステージ目標4万円）</li>
           <li>撃退法：<b>【唐辛子増し】</b>にして提供するか、<b>ジャスト湯切り</b>で感動させよ！</li>
           <li>※ネギと唐辛子は<b>全丼デフォルト</b>で投入済。注文に応じて「増し/抜き」で調整！</li>
-          <li>逃げ出したら<b>「お会計」連打</b>で捕まえろ！</li>
+          <li>逃げ出したら<b>「お会計」連打</b>で捕まえろ！（※丈二は足が速く捕縛難度UP）</li>
         </ul>
       </div>
     `;
@@ -938,4 +1029,5 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 });
+
 

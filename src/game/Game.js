@@ -47,6 +47,7 @@ export class SobaGame {
     // タイマーID
     this.gameTimer = null;
     this.spawnTimer = null;
+    this.nekoTimer = null;      // 泥棒猫「骨折」タイマー
     this.ginjiSpawnedToday = 0;
   }
 
@@ -116,7 +117,7 @@ export class SobaGame {
     this.difficulty = saveData.difficulty || 'normal';
     this.stage      = saveData.stage || 1;
     this.day        = saveData.day   || 1;
-    this.level      = saveData.level || (this.stage >= 3 ? 3 : (this.stage >= 2 ? 2 : 1));
+    this.level      = saveData.level || (this.stage >= 4 ? 4 : (this.stage >= 3 ? 3 : (this.stage >= 2 ? 2 : 1)));
     this.score      = saveData.score || 0;
     this.repScore   = saveData.repScore || 100;
     this.stats      = saveData.stats || { servedCount: 0, ginjiDefeated: 0, ginjiEscaped: 0, earnings: 0 };
@@ -147,10 +148,18 @@ export class SobaGame {
     this._startSession();
   }
 
-  /** エンドレス営業開始（第3ステージクリア後） */
-  startEndless() {
+  /** 第4ステージ開始（最終決戦） */
+  startStage4() {
     this.stage = 4;
-    this.level = 3;
+    this.level = 4;
+    this.day++;
+    this._startSession();
+  }
+
+  /** エンドレス営業開始（第4ステージクリア後） */
+  startEndless() {
+    this.stage = 5;
+    this.level = 4;
     this.day++;
     this._startSession();
   }
@@ -175,13 +184,20 @@ export class SobaGame {
       if      (this.difficulty === 'easy')   this.timeRemaining = 180;
       else if (this.difficulty === 'normal') this.timeRemaining = 150;
       else                                   this.timeRemaining = 120;
-    } else {
-      // stage >= 4 (エンドレス営業)
-      this.targetScore = Infinity;
-      this.level = 3;
+    } else if (this.stage === 4) {
+      // 第4ステージ（最終決戦・目標4万円）
+      this.targetScore = 40000;
+      this.level = 4;
       if      (this.difficulty === 'easy')   this.timeRemaining = 180;
-      else if (this.difficulty === 'normal') this.timeRemaining = 150;
-      else                                   this.timeRemaining = 120;
+      else if (this.difficulty === 'normal') this.timeRemaining = 140;
+      else                                   this.timeRemaining = 100;
+    } else {
+      // stage >= 5 (エンドレス営業)
+      this.targetScore = Infinity;
+      this.level = 4;
+      if      (this.difficulty === 'easy')   this.timeRemaining = 180;
+      else if (this.difficulty === 'normal') this.timeRemaining = 140;
+      else                                   this.timeRemaining = 100;
     }
 
     this.isPlaying = true;
@@ -201,11 +217,23 @@ export class SobaGame {
     this.gameTimer = setInterval(() => this.tick(), 1000);
 
     if (this.spawnTimer) clearInterval(this.spawnTimer);
-    const spawnInterval = this.difficulty === 'easy' ? 6000 : (this.difficulty === 'normal' ? 4500 : 3500);
+    let spawnInterval = this.difficulty === 'easy' ? 6000 : (this.difficulty === 'normal' ? 4500 : 3500);
+    if (this.level >= 4) {
+      spawnInterval = Math.round(spawnInterval * 0.85); // 第4ステージは来店ラッシュ
+    }
     this.spawnTimer = setInterval(() => this.checkSpawn(), spawnInterval);
 
     sound.startBGM();
     this.ui.onGameStateChange(this);
+
+    // 泥棒猫「骨折」タイマー
+    // 第2ステージ以降、ランダム間隔で発生（easy: 知らず / normal: 平均ボールに1回 / hard: 2回）
+    if (this.nekoTimer) clearInterval(this.nekoTimer);
+    if (this.stage >= 2 && this.difficulty !== 'easy') {
+      const nekoBaseInterval = this.difficulty === 'hard' ? 12000 : 18000;
+      const nekoInterval = Math.round(nekoBaseInterval / (this.stage >= 4 ? 1.5 : this.stage >= 3 ? 1.25 : 1.0));
+      this.nekoTimer = setInterval(() => this._triggerNekoBoratu(), nekoInterval);
+    }
   }
 
   /** ゲームを中断してタイトルへ */
@@ -237,7 +265,7 @@ export class SobaGame {
       if (!customer) return;
 
       if (customer.state === 'waiting') {
-        const decrement = customer.isTachiguishi ? 1.0 : patienceDecrement;
+        const decrement = customer.isTachiguishi ? (customer.isJoji ? 1.2 : 1.0) : (this.level >= 4 ? patienceDecrement * 1.2 : patienceDecrement);
         customer.patience -= decrement;
         if (customer.patience <= 0) {
           sound.playAngry();
@@ -246,7 +274,11 @@ export class SobaGame {
           this.ui.showToast(`${customer.name}は怒って帰ってしまった…`, 'error');
         }
       } else if (customer.state === 'escaping') {
+        // 逐次ステージで逃走速度が上がる (stage1=×1.0, stage2=×1.25, stage3=×1.55, stage4=×1.9)
+        const stageEscaleScale = this.stage >= 4 ? 1.9 : (this.stage >= 3 ? 1.55 : (this.stage >= 2 ? 1.25 : 1.0));
         let escapeStep = this.difficulty === 'easy' ? 5 : (this.difficulty === 'normal' ? 10 : 15);
+        escapeStep = Math.round(escapeStep * stageEscaleScale);
+        if (customer.isJoji) escapeStep = Math.round(escapeStep * 1.35); // 丈二は逃げ足が速い！
         customer.escapeProgress += escapeStep;
         if (customer.escapeProgress >= 100) {
           customer.state = 'left';
@@ -279,10 +311,31 @@ export class SobaGame {
     let isGinji = false;
     let isOgin  = false;
     let isGonzo = false;
+    let isJoji  = false;
 
     if (this.ginjiSpawnedToday < 3 && Math.random() < 0.35) {
       this.ginjiSpawnedToday++;
-      if (this.level >= 3) {
+      if (this.level >= 4) {
+        // 第4ステージ: 丈二、権蔵、お銀、銀二
+        const rand = Math.random();
+        if (rand < 0.35) {
+          isJoji = true;
+          sound.playGinjiAlert();
+          this.ui.showCutin('立食い師『海老天の丈二』が現れた！無銭飲食に気をつけろ！');
+        } else if (rand < 0.60) {
+          isGonzo = true;
+          sound.playGinjiAlert();
+          this.ui.showCutin('立食い師『イカ天の権蔵』が現れた！無銭飲食に気をつけろ！');
+        } else if (rand < 0.80) {
+          isOgin = true;
+          sound.playGinjiAlert();
+          this.ui.showCutin('立食い師『コロッケのお銀』が現れた！無銭飲食に気をつけろ！');
+        } else {
+          isGinji = true;
+          sound.playGinjiAlert();
+          this.ui.showCutin('立食い師『月見の銀二』が現れた！無銭飲食に気をつけろ！');
+        }
+      } else if (this.level >= 3) {
         const rand = Math.random();
         if (rand < 0.34) {
           isGonzo = true;
@@ -308,7 +361,7 @@ export class SobaGame {
       }
     }
 
-    const newCustomer = new Customer(Date.now(), isGinji, isOgin, isGonzo, this.difficulty, this.level);
+    const newCustomer = new Customer(Date.now(), isGinji, isOgin, isGonzo, isJoji, this.difficulty, this.level);
     this.customers[targetSeat] = newCustomer;
     this.ui.onGameStateChange(this);
   }
@@ -449,6 +502,9 @@ export class SobaGame {
     } else if (this.stage === 3 && this.score >= 30000) {
       this._triggerStage3Clear();
       return true;
+    } else if (this.stage === 4 && this.score >= 40000) {
+      this._triggerStage4Clear();
+      return true;
     }
     return false;
   }
@@ -485,13 +541,13 @@ export class SobaGame {
     this.ui.onGameStateChange(this);
   }
 
-  /** 第3ステージ クリア（目標3万円達成 → エンディング / エンドレスへ） */
+  /** 第3ステージ クリア（目標3万円達成 → 第4ステージへ） */
   _triggerStage3Clear() {
     this._stopTimers();
     sound.stopBGM();
 
-    // セーブ: stage=4 (エンドレス), level=3, day=翌日として保存
-    this.saveProgress({ stage: 4, level: 3, day: this.day + 1 });
+    // セーブ: stage=4 (第4ステージ), level=4, day=翌日として保存
+    this.saveProgress({ stage: 4, level: 4, day: this.day + 1 });
 
     // 盤面をクリア
     this.customers = [null, null, null];
@@ -501,10 +557,50 @@ export class SobaGame {
     this.ui.onGameStateChange(this);
   }
 
+  /** 第4ステージ クリア（目標4万円達成 → 真エンディング / エンドレスへ） */
+  _triggerStage4Clear() {
+    this._stopTimers();
+    sound.stopBGM();
+
+    // セーブ: stage=5 (エンドレス), level=4, day=翌日として保存
+    this.saveProgress({ stage: 5, level: 4, day: this.day + 1 });
+
+    // 盤面をクリア
+    this.customers = [null, null, null];
+    this.bowls.forEach(b => b.clear());
+
+    if (this.ui.onStage4Clear) this.ui.onStage4Clear(this);
+    this.ui.onGameStateChange(this);
+  }
+
   _stopTimers() {
     this.isPlaying = false;
     if (this.gameTimer)  { clearInterval(this.gameTimer);  this.gameTimer  = null; }
     if (this.spawnTimer) { clearInterval(this.spawnTimer); this.spawnTimer = null; }
+    if (this.nekoTimer)  { clearInterval(this.nekoTimer);  this.nekoTimer  = null; }
+  }
+
+  // 泥棒猫「骨折」発生: 仔備中の一番左の丸にトッピングを盗む
+  _triggerNekoBoratu() {
+    if (!this.isPlaying) return;
+
+    // トッピングが入っている丸を探す
+    const bowlsWithToppings = this.bowls
+      .map((bowl, idx) => ({ bowl, idx }))
+      .filter(({ bowl }) => bowl.toppings.length > 0);
+
+    if (bowlsWithToppings.length === 0) return; // 盗むものなし
+
+    // ランダムに丸を選び、トッピングを一個盗む
+    const target = bowlsWithToppings[Math.floor(Math.random() * bowlsWithToppings.length)];
+    const stolenTopping = target.bowl.toppings.splice(
+      Math.floor(Math.random() * target.bowl.toppings.length), 1
+    )[0];
+
+    const toppingName = { raw_egg: '生卵', korokke: 'コロッケ', ikaten: 'イカ天', ebiten: '海老天' }[stolenTopping] || 'トッピング';
+    sound.playAngry();
+    this.ui.showNeko(toppingName, target.idx + 1);
+    this.ui.onGameStateChange(this);
   }
 
   // ─── 客への提供 ─────────────────────────────────────────────────
@@ -678,6 +774,9 @@ export class SobaGame {
       return;
     } else if (this.stage === 3 && this.score >= 30000) {
       this._triggerStage3Clear();
+      return;
+    } else if (this.stage === 4 && this.score >= 40000) {
+      this._triggerStage4Clear();
       return;
     }
 

@@ -1,4 +1,4 @@
-// 客クラス（通常のお客・月見の銀二・コロッケのお銀・イカ天の権蔵）
+// 客クラス（通常のお客・月見の銀二・コロッケの揚羽・イカ天の権蔵）
 
 export const DASHI_TYPES = {
   katsuo:  { id: 'katsuo',  name: 'かつお出汁', color: '#c27b38', labelColor: '#8a4b10' },
@@ -17,7 +17,8 @@ export const NOODLE_TYPES = {
 export const TOPPING_TYPES = {
   raw_egg: { id: 'raw_egg', name: '生卵',     color: '#f5cd47', icon: '🥚' },
   korokke: { id: 'korokke', name: 'コロッケ', color: '#c87941', icon: '🧆' }, // Level 2
-  ikaten:  { id: 'ikaten',  name: 'イカ天',   color: '#e8c374', icon: '🦑' }  // Level 3
+  ikaten:  { id: 'ikaten',  name: 'イカ天',   color: '#e8c374', icon: '🦑' }, // Level 3
+  ebiten:  { id: 'ebiten',  name: '海老天',   color: '#e76f51', icon: '🦐' }  // Level 4
 };
 
 const CUSTOMER_AVATARS = [
@@ -28,7 +29,8 @@ const CUSTOMER_AVATARS = [
   { name: 'OLエリ',           avatar: '👩‍💼', quote: '月見そばが食べたいな' },
   { name: '板前ケンジ',       avatar: '👨‍🍳', quote: 'へぎ蕎麦とコロッケ頼む' }, // Level 2常連
   { name: '釣り人タケシ',     avatar: '🎣',   quote: '宗田節にイカ天、染みるねぇ' }, // Level 3常連
-  { name: 'トラッカー熊田',   avatar: '🚚',   quote: '田舎そばの大盛り、ガツンとくれ！' } // Level 3常連
+  { name: 'トラッカー熊田',   avatar: '🚚',   quote: '田舎そばの大盛り、ガツンとくれ！' }, // Level 3常連
+  { name: '御曹司タカシ',     avatar: '🤵',   quote: '一番贅沢な海老天そばを頼むよ' } // Level 4常連
 ];
 
 const SPICY_LOVER_QUOTES = [
@@ -39,12 +41,13 @@ const SPICY_LOVER_QUOTES = [
 ];
 
 export class Customer {
-  constructor(id, isGinji = false, isOgin = false, isGonzo = false, difficulty = 'normal', level = 1) {
+  constructor(id, isGinji = false, isOgin = false, isGonzo = false, isJoji = false, difficulty = 'normal', level = 1) {
     this.id = id;
     this.isGinji = isGinji;
     this.isOgin  = isOgin;
     this.isGonzo = isGonzo;
-    this.isTachiguishi = isGinji || isOgin || isGonzo;
+    this.isJoji  = isJoji;
+    this.isTachiguishi = isGinji || isOgin || isGonzo || isJoji;
     this.difficulty = difficulty;
     this.level = level;
 
@@ -54,22 +57,28 @@ export class Customer {
     let patienceMultiplier = 1.0;
     let requiredCatch = 8;
 
+    // 難易度ベース
     if (difficulty === 'easy') {
       patienceMultiplier = 10.0;
-      requiredCatch = 3;
+      requiredCatch = isJoji ? 5 : 3;
     } else if (difficulty === 'normal') {
       patienceMultiplier = 2.0;
-      requiredCatch = 5;
+      requiredCatch = isJoji ? 8 : 5;
     } else {
       patienceMultiplier = 1.0;
-      requiredCatch = 8;
+      requiredCatch = isJoji ? 12 : 8;
     }
 
-    const basePatience = this.isTachiguishi ? 25 : (20 + Math.random() * 10);
+    // ステージ（level）が上がるほど捕獲が難しくなる
+    // level1=×1.0, level2=×1.3, level3=×1.6, level4=×2.0
+    const levelCatchScale = level === 4 ? 2.0 : (level === 3 ? 1.6 : (level === 2 ? 1.3 : 1.0));
+    requiredCatch = Math.ceil(requiredCatch * levelCatchScale);
+
+    const basePatience = this.isTachiguishi ? (isJoji ? 22 : 25) : (20 + Math.random() * 10);
     this.patience    = basePatience * patienceMultiplier;
     this.maxPatience = this.patience;
 
-    this.state         = 'waiting';
+    this.state               = 'waiting';
     this.escapeProgress      = 0;
     this.catchClicks         = 0;
     this.requiredCatchClicks = requiredCatch;
@@ -89,10 +98,10 @@ export class Customer {
       this.price  = 500;
 
     } else if (isOgin) {
-      // ── コロッケのお銀（Level 2） ─────────────────────
-      this.name   = 'コロッケのお銀';
-      this.avatar = '💃';
-      this.quote  = 'コロッケはね、サクサクじゃないと意味がないの。';
+      // ── コロッケの揚羽（Level 2） ─────────────────────
+      this.name   = 'コロッケの揚羽';
+      this.avatar = '🦋';
+      this.quote  = 'コロッケはね、サクサクじゃないと意味がないの。揚げ加減、見させてもらうわよ。';
       this.order  = {
         dashi: 'kombu',
         noodle: 'nihachi',
@@ -115,6 +124,20 @@ export class Customer {
         togarashiLevel: 'normal'
       };
       this.price  = 700;
+
+    } else if (isJoji) {
+      // ── 海老天の丈二（Level 4 / 第4ステージ） ──────────
+      this.name   = '海老天の丈二';
+      this.avatar = '🍤🕶️';
+      this.quote  = '……一本揚げの海老天こそ蕎麦の華。見極めさせてもらおうか。';
+      this.order  = {
+        dashi: 'soda',
+        noodle: 'inaka',
+        toppings: ['ebiten'],
+        negiLevel: 'normal',
+        togarashiLevel: 'normal'
+      };
+      this.price  = 800;
 
     } else {
       const template = CUSTOMER_AVATARS[Math.floor(Math.random() * CUSTOMER_AVATARS.length)];
@@ -145,6 +168,7 @@ export class Customer {
     const menuTypes = ['kake', 'tsukimi'];
     if (this.level >= 2) menuTypes.push('korokke');
     if (this.level >= 3) menuTypes.push('ikaten');
+    if (this.level >= 4) menuTypes.push('ebiten');
 
     const selectedMenu = menuTypes[Math.floor(Math.random() * menuTypes.length)];
 
@@ -155,6 +179,8 @@ export class Customer {
       toppings = ['korokke'];
     } else if (selectedMenu === 'ikaten') {
       toppings = ['ikaten'];
+    } else if (selectedMenu === 'ebiten') {
+      toppings = ['ebiten'];
     }
 
     // ネギの好み（通常: 70% normal, 20% nashi, 10% mashi）
@@ -191,6 +217,7 @@ export class Customer {
     if (order.toppings.includes('raw_egg')) base += 50;
     if (order.toppings.includes('korokke')) base += 100;
     if (order.toppings.includes('ikaten'))  base += 120;
+    if (order.toppings.includes('ebiten'))  base += 150;
 
     if (order.negiLevel === 'mashi')      base += 30;
     if (order.togarashiLevel === 'mashi') base += 20;
@@ -203,7 +230,9 @@ export class Customer {
     const noodleName = NOODLE_TYPES[this.order.noodle]?.name || '';
 
     let toppingName = 'かけ';
-    if (this.order.toppings.includes('ikaten')) {
+    if (this.order.toppings.includes('ebiten')) {
+      toppingName = '海老天';
+    } else if (this.order.toppings.includes('ikaten')) {
       toppingName = 'イカ天';
     } else if (this.order.toppings.includes('korokke')) {
       toppingName = 'コロッケ';
