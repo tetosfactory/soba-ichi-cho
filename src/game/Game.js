@@ -167,26 +167,26 @@ export class SobaGame {
   /** 内部: 1日分のセッション開始（タイマーリセット含む） */
   _startSession() {
     if (this.stage === 1) {
-      this.targetScore = 10000;
+      this.targetScore = 10000; // ステージ1: 目標1万円
       this.level = 1;
       if      (this.difficulty === 'easy')   this.timeRemaining = 120;
       else if (this.difficulty === 'normal') this.timeRemaining = 90;
       else                                   this.timeRemaining = 75;
     } else if (this.stage === 2) {
-      this.targetScore = 20000;
+      this.targetScore = 25000; // ステージ2: 目標2万5千円
       this.level = 2;
       if      (this.difficulty === 'easy')   this.timeRemaining = 150;
       else if (this.difficulty === 'normal') this.timeRemaining = 120;
       else                                   this.timeRemaining = 90;
     } else if (this.stage === 3) {
-      this.targetScore = 30000;
+      this.targetScore = 35000; // ステージ3: 目標3万5千円
       this.level = 3;
       if      (this.difficulty === 'easy')   this.timeRemaining = 180;
       else if (this.difficulty === 'normal') this.timeRemaining = 150;
       else                                   this.timeRemaining = 120;
     } else if (this.stage === 4) {
-      // 第4ステージ（最終決戦・目標4万円）
-      this.targetScore = 40000;
+      // 第4ステージ（最終決戦・目標5万円）
+      this.targetScore = 50000;
       this.level = 4;
       if      (this.difficulty === 'easy')   this.timeRemaining = 180;
       else if (this.difficulty === 'normal') this.timeRemaining = 140;
@@ -223,15 +223,16 @@ export class SobaGame {
     }
     this.spawnTimer = setInterval(() => this.checkSpawn(), spawnInterval);
 
-    sound.startBGM();
+    sound.startBGM(this.stage);
     this.ui.onGameStateChange(this);
 
-    // 泥棒猫「骨折」タイマー
-    // 第2ステージ以降、ランダム間隔で発生（easy: 知らず / normal: 平均ボールに1回 / hard: 2回）
+    // 泥棒猫「小鉄」タイマー
+    // 第2ステージ以降発生（easy: 22秒間隔 / normal: 15秒間隔 / hard: 10秒間隔）
     if (this.nekoTimer) clearInterval(this.nekoTimer);
-    if (this.stage >= 2 && this.difficulty !== 'easy') {
-      const nekoBaseInterval = this.difficulty === 'hard' ? 12000 : 18000;
-      const nekoInterval = Math.round(nekoBaseInterval / (this.stage >= 4 ? 1.5 : this.stage >= 3 ? 1.25 : 1.0));
+    if (this.nekoRetryTimer) clearTimeout(this.nekoRetryTimer);
+    if (this.stage >= 2) {
+      const nekoBaseInterval = this.difficulty === 'hard' ? 10000 : (this.difficulty === 'normal' ? 15000 : 22000);
+      const nekoInterval = Math.round(nekoBaseInterval / (this.stage >= 4 ? 1.4 : this.stage >= 3 ? 1.2 : 1.0));
       this.nekoTimer = setInterval(() => this._triggerNekoBoratu(), nekoInterval);
     }
   }
@@ -408,6 +409,7 @@ export class SobaGame {
     currentBowl.noodle = noodleType;
     currentBowl.isPerfectCooked = wasPerfect;
     pot.reset();
+    sound.playDrain();
     if (wasPerfect) {
       sound.playServeSuccess();
       this.ui.showToast('🌟 ジャスト湯切り！完璧な茹で加減！', 'success');
@@ -487,7 +489,7 @@ export class SobaGame {
 
   /**
    * 売上加算のたびに呼び出す。
-   * 1万円（第1ステージ）、2万円（第2ステージ）、3万円（第3ステージ）に達したらゲームを即停止。
+   * 各ステージの目標金額に達したらゲームを即停止。
    * @returns {boolean} 目標達成してゲームを止めたらtrue
    */
   checkScoreGoal() {
@@ -496,13 +498,13 @@ export class SobaGame {
     if (this.stage === 1 && this.score >= 10000) {
       this._triggerGoalReached();
       return true;
-    } else if (this.stage === 2 && this.score >= 20000) {
+    } else if (this.stage === 2 && this.score >= 25000) {
       this._triggerStage2Clear();
       return true;
-    } else if (this.stage === 3 && this.score >= 30000) {
+    } else if (this.stage === 3 && this.score >= 35000) {
       this._triggerStage3Clear();
       return true;
-    } else if (this.stage === 4 && this.score >= 40000) {
+    } else if (this.stage === 4 && this.score >= 50000) {
       this._triggerStage4Clear();
       return true;
     }
@@ -575,32 +577,85 @@ export class SobaGame {
 
   _stopTimers() {
     this.isPlaying = false;
-    if (this.gameTimer)  { clearInterval(this.gameTimer);  this.gameTimer  = null; }
-    if (this.spawnTimer) { clearInterval(this.spawnTimer); this.spawnTimer = null; }
-    if (this.nekoTimer)  { clearInterval(this.nekoTimer);  this.nekoTimer  = null; }
+    if (this.gameTimer)      { clearInterval(this.gameTimer);      this.gameTimer      = null; }
+    if (this.spawnTimer)     { clearInterval(this.spawnTimer);     this.spawnTimer     = null; }
+    if (this.nekoTimer)      { clearInterval(this.nekoTimer);      this.nekoTimer      = null; }
+    if (this.nekoRetryTimer) { clearTimeout(this.nekoRetryTimer);  this.nekoRetryTimer = null; }
   }
 
-  // 横取り猫「小鉄」発生: 盛り付け済みの丼からトッピングを横取りする
+  // 横取り猫「小鉄」発生: 盛り付け済みの丼からトッピングや麺を横取りする
   _triggerNekoBoratu() {
     if (!this.isPlaying) return;
 
-    // トッピングが入っている丸を探す
+    // 1. トッピングが入っている丼を探す
     const bowlsWithToppings = this.bowls
       .map((bowl, idx) => ({ bowl, idx }))
       .filter(({ bowl }) => bowl.toppings.length > 0);
 
-    if (bowlsWithToppings.length === 0) return; // 盗むものなし
+    if (bowlsWithToppings.length > 0) {
+      // トッピングを一個盗む
+      const target = bowlsWithToppings[Math.floor(Math.random() * bowlsWithToppings.length)];
+      const stolenTopping = target.bowl.toppings.splice(
+        Math.floor(Math.random() * target.bowl.toppings.length), 1
+      )[0];
 
-    // ランダムに丸を選び、トッピングを一個盗む
-    const target = bowlsWithToppings[Math.floor(Math.random() * bowlsWithToppings.length)];
-    const stolenTopping = target.bowl.toppings.splice(
-      Math.floor(Math.random() * target.bowl.toppings.length), 1
-    )[0];
+      const toppingName = { raw_egg: '生卵', korokke: 'コロッケ', ikaten: 'イカ天', ebiten: '海老天' }[stolenTopping] || 'トッピング';
+      sound.playNekoMeow();
+      this.ui.showNeko(toppingName, target.idx + 1);
+      this.ui.onGameStateChange(this);
+      return;
+    }
 
-    const toppingName = { raw_egg: '生卵', korokke: 'コロッケ', ikaten: 'イカ天', ebiten: '海老天' }[stolenTopping] || 'トッピング';
-    sound.playAngry();
-    this.ui.showNeko(toppingName, target.idx + 1);
-    this.ui.onGameStateChange(this);
+    // 2. 麺が入っている丼を探す
+    const bowlsWithNoodles = this.bowls
+      .map((bowl, idx) => ({ bowl, idx }))
+      .filter(({ bowl }) => bowl.noodle !== null);
+
+    if (bowlsWithNoodles.length > 0) {
+      const target = bowlsWithNoodles[Math.floor(Math.random() * bowlsWithNoodles.length)];
+      const noodleName = { nihachi: '二八そば', juwari: '十割そば', hegi: 'へぎ蕎麦', inaka: '田舎そば' }[target.bowl.noodle] || 'お蕎麦';
+      target.bowl.noodle = null;
+      target.bowl.isPerfectCooked = false;
+      sound.playNekoMeow();
+      this.ui.showNeko(noodleName, target.idx + 1);
+      this.ui.onGameStateChange(this);
+      return;
+    }
+
+    // 3. 今丼が空の場合、調理が進む2.5秒後に再チェック
+    if (!this.nekoRetryTimer) {
+      this.nekoRetryTimer = setTimeout(() => {
+        this.nekoRetryTimer = null;
+        if (!this.isPlaying) return;
+        const anyTopped = this.bowls.map((b, i) => ({ b, i })).filter(({ b }) => b.toppings.length > 0);
+        const anyNoodled = this.bowls.map((b, i) => ({ b, i })).filter(({ b }) => b.noodle !== null);
+        if (anyTopped.length > 0) {
+          const t = anyTopped[Math.floor(Math.random() * anyTopped.length)];
+          const stolen = t.b.toppings.splice(Math.floor(Math.random() * t.b.toppings.length), 1)[0];
+          const name = { raw_egg: '生卵', korokke: 'コロッケ', ikaten: 'イカ天', ebiten: '海老天' }[stolen] || 'トッピング';
+          sound.playNekoMeow();
+          this.ui.showNeko(name, t.i + 1);
+          this.ui.onGameStateChange(this);
+        } else if (anyNoodled.length > 0) {
+          const t = anyNoodled[Math.floor(Math.random() * anyNoodled.length)];
+          const name = { nihachi: '二八そば', juwari: '十割そば', hegi: 'へぎ蕎麦', inaka: '田舎そば' }[t.b.noodle] || 'お蕎麦';
+          t.b.noodle = null;
+          t.b.isPerfectCooked = false;
+          sound.playNekoMeow();
+          this.ui.showNeko(name, t.i + 1);
+          this.ui.onGameStateChange(this);
+        } else {
+          // 仕込み台の具材をサッとさらって逃げる
+          const stageToppings = ['生卵'];
+          if (this.stage >= 2) stageToppings.push('コロッケ');
+          if (this.stage >= 3) stageToppings.push('イカ天');
+          if (this.stage >= 4) stageToppings.push('海老天');
+          const stolen = stageToppings[Math.floor(Math.random() * stageToppings.length)];
+          sound.playNekoMeow();
+          this.ui.showNeko(stolen, null);
+        }
+      }, 2500);
+    }
   }
 
   // ─── 客への提供 ─────────────────────────────────────────────────
@@ -695,11 +750,13 @@ export class SobaGame {
         if (this.checkScoreGoal()) return;
       }
     } else {
+      // 注文と違うものを提供 → 損害金として蕎麦の原価分をマイナス
       sound.playAngry();
+      sound.playTrash();
       let mismatch = '';
       const dashiNames    = { katsuo: 'かつお出汁', niboshi: '煮干し出汁', kombu: 'こんぶ出汁', soda: '宗田節出汁' };
       const noodleNames   = { nihachi: '二八そば', juwari: '十割そば', hegi: 'へぎ蕎麦', inaka: '田舎そば' };
-      const toppingNamesMap = { raw_egg: '生卵', korokke: 'コロッケ', ikaten: 'イカ天' };
+      const toppingNamesMap = { raw_egg: '生卵', korokke: 'コロッケ', ikaten: 'イカ天', ebiten: '海老天' };
 
       if (bowl.dashi !== customer.order.dashi) {
         mismatch = `出汁が違う！（${dashiNames[bowl.dashi] || bowl.dashi}→${dashiNames[customer.order.dashi] || customer.order.dashi}が必要）`;
@@ -721,7 +778,16 @@ export class SobaGame {
       } else {
         mismatch = '注文と違います！';
       }
-      this.ui.showToast(`注文と違う！ ${mismatch}`, 'error');
+
+      // 損害金計算: 提供した蕎麦の原価（= 客の注文金額ベース）をマイナス
+      const penalty = customer.price;
+      this.score -= penalty;
+      if (!this.stats.penalties) this.stats.penalties = 0;
+      this.stats.penalties += penalty;
+
+      this.ui.showToast(`❌ ${mismatch} 損害金 -${penalty}円！（食材廃棄）`, 'error');
+      bowl.clear();
+      this.customers[seatIndex] = null;
     }
 
     this.ui.onGameStateChange(this);
@@ -732,7 +798,7 @@ export class SobaGame {
     if (!customer || customer.state !== 'escaping') return;
 
     customer.catchClicks++;
-    sound.playNoodleBoil();
+    sound.playCatch();
 
     if (customer.catchClicks >= customer.requiredCatchClicks) {
       sound.playServeSuccess();

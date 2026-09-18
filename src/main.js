@@ -1,6 +1,8 @@
 // メインエントリーポイント＆UIバインディング
 
 import './style.css';
+import './modern.css';
+import { portrait, titleIntro } from './visuals.js';
 import confetti from 'canvas-confetti';
 import { SobaGame } from './game/Game.js';
 import { DASHI_TYPES, NOODLE_TYPES, TOPPING_TYPES } from './game/Customer.js';
@@ -37,6 +39,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const modalBody = document.getElementById('modal-body');
   const btnStartGame = document.getElementById('btn-start-game');
   const btnContinueGame = document.getElementById('btn-continue-game');
+
+  modalBody.insertAdjacentHTML('afterbegin', titleIntro);
 
   // 茹で釜ボタン
   const btnBoilNihachi = document.getElementById('btn-boil-nihachi');
@@ -139,21 +143,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // 全画面リクエスト（ゲーム開始時）
-  function tryRequestFullscreen() {
-    const el = document.documentElement;
-    const req = el.requestFullscreen
-      || el.webkitRequestFullscreen
-      || el.mozRequestFullScreen
-      || el.msRequestFullscreen;
-    if (req) {
-      req.call(el).catch(() => {});
-    }
-  }
-
   // イベントバインディング：最初から始める
   btnStartGame.addEventListener('click', () => {
-    tryRequestFullscreen();
+    // Keep the browser viewport stable when starting or resuming.
     game.clearSaveData();
     modalOverlay.classList.add('hidden');
     game.setDifficulty(selectedDifficulty);
@@ -164,7 +156,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // イベントバインディング：続きから始める / 続ける
   if (btnContinueGame) {
     btnContinueGame.addEventListener('click', () => {
-      tryRequestFullscreen();
+      // Keep the browser viewport stable when starting or resuming.
       modalOverlay.classList.add('hidden');
 
       if (currentModalMode === 'goal_reached') {
@@ -522,7 +514,7 @@ document.addEventListener('DOMContentLoaded', () => {
               <div class="customer-speech">
                 <div class="recipe-hint">${customer.getRecipeIcons()}</div>
               </div>
-              <div class="customer-avatar">${customer.avatar}</div>
+              <div class="customer-avatar">${portrait(customer.name)}</div>
               <div class="customer-name">${customer.name} ${spicyTagHtml}</div>
               <div class="customer-quote-box">「${customer.quote}」</div>
               <div class="patience-bar">
@@ -549,7 +541,7 @@ document.addEventListener('DOMContentLoaded', () => {
               <div class="customer-speech alert-speech">
                 <div class="order-title text-danger">食い逃げ中！</div>
               </div>
-              <div class="customer-avatar">${customer.avatar}</div>
+              <div class="customer-avatar">${portrait(customer.name)}</div>
               <div class="customer-name text-danger">${customer.name}</div>
               <div class="customer-quote-box text-danger">「ごちそうさん！」</div>
               <div class="escape-bar">
@@ -573,7 +565,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
           } else if (customer.state === 'defeated') {
             cardEl.innerHTML = `
-              <div class="customer-avatar">😵</div>
+              <div class="customer-avatar defeated-portrait">${portrait(customer.name)}</div>
               <div class="customer-name">${customer.name}</div>
               <div class="customer-quote-box">「参りました…！」</div>
             `;
@@ -763,8 +755,8 @@ document.addEventListener('DOMContentLoaded', () => {
       if (cutinText)   cutinText.textContent   = '「……いつもの、かつお十割の月見だ。」';
     }
 
+    if (cutinAvatar && cutinName) cutinAvatar.innerHTML = portrait(cutinName.textContent);
     cutinOverlay.classList.remove('hidden');
-    sound.playGinjiAlert();
     setTimeout(() => {
       cutinOverlay.classList.add('hidden');
     }, 2200);
@@ -787,12 +779,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 横取り猫「小鉄」の襲来演出
   function showNekoCutin(toppingName, bowlNum) {
-    showToastMessage(`🐾 ニャーン！横取り猫の『小鉄』に丼${bowlNum}の【${toppingName}】を横取りされた！`, 'warning');
+    if (bowlNum) {
+      showToastMessage(`🐾 ニャーン！横取り猫の『小鉄』に丼${bowlNum}の【${toppingName}】を横取りされた！`, 'warning');
+      if (cutinText) cutinText.textContent = `「ニャ〜オ！（丼${bowlNum}の${toppingName}をサッとくわえて逃げ去った！）」`;
+    } else {
+      showToastMessage(`🐾 ニャーン！横取り猫の『小鉄』に仕込み台の【${toppingName}】を横取りされた！`, 'warning');
+      if (cutinText) cutinText.textContent = `「ニャ〜オ！（カウンターの仕込み${toppingName}をサッとくわえて逃げ去った！）」`;
+    }
     if (cutinTitle)  cutinTitle.textContent  = '🐾 トッピング横取り！ 🐾';
-    if (cutinAvatar) cutinAvatar.textContent = '🐱🐾';
     if (cutinName)   cutinName.textContent   = '横取り猫の小鉄';
-    if (cutinText)   cutinText.textContent   = `「ニャ〜オ！（丼${bowlNum}の${toppingName}をサッとくわえて逃げ去った！）」`;
 
+    if (cutinAvatar && cutinName) cutinAvatar.innerHTML = portrait(cutinName.textContent);
     cutinOverlay.classList.remove('hidden');
     setTimeout(() => {
       cutinOverlay.classList.add('hidden');
@@ -815,7 +812,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <p class="comment">
           見事目標金額の1万円に達しました！<br>
           <small style="color: #ffd166;">※進行状況は自動的にオートセーブされました。</small><br><br>
-          「続ける」を押すと、新食材（こんぶ出汁・へぎ蕎麦・コロッケ）と立食い師『コロッケの揚羽』が登場する<b>第二ステージ（目標2万円）</b>が開始します！
+          「続ける」を押すと、新食材（こんぶ出汁・へぎ蕎麦・コロッケ）と立食い師『コロッケの揚羽』が登場する<b>第二ステージ（目標2万5千円）</b>が開始します！
         </p>
       </div>
     `;
@@ -834,13 +831,13 @@ document.addEventListener('DOMContentLoaded', () => {
     modalTitle.textContent = '第二ステージ 目標達成！';
     modalBody.innerHTML = `
       <div class="result-box success">
-        <h3>🎉 第2ステージ 目標2万円達成！ 🎉</h3>
+        <h3>🎉 第2ステージ 目標2万5千円達成！ 🎉</h3>
         <p class="score-result">累計売上: <span>${game.score.toLocaleString()}円</span></p>
         <p>営業日数: ${game.day} 日目 | 提供客数: ${game.stats.servedCount} 人 | 立食い師撃退数: ${game.stats.ginjiDefeated} 人</p>
         <p class="comment">
-          「コロッケの揚羽」の罠を見事かわし、目標売上2万円を突破！<br>
+          「コロッケの揚羽」の罠を見事かわし、目標売上2万5千円を突破！<br>
           <small style="color: #ffd166;">※進行状況は自動的にオートセーブされました。</small><br><br>
-          「続ける」を押すと、新食材（<b>宗田節出汁・田舎そば・イカ天</b>）と歴戦の立食い師<b>『イカ天の権蔵』</b>が待ち受ける<b>第三ステージ（目標3万円）</b>に突入します！
+          「続ける」を押すと、新食材（<b>宗田節出汁・田舎そば・イカ天</b>）と歴戦の立食い師<b>『イカ天の権蔵』</b>が待ち受ける<b>第三ステージ（目標3万5千円）</b>に突入します！
         </p>
       </div>
     `;
@@ -859,13 +856,13 @@ document.addEventListener('DOMContentLoaded', () => {
     modalTitle.textContent = '第三ステージ 目標達成！';
     modalBody.innerHTML = `
       <div class="result-box success">
-        <h3>🎉 第3ステージ 目標3万円達成！ 🎉</h3>
+        <h3>🎉 第3ステージ 目標3万5千円達成！ 🎉</h3>
         <p class="score-result">累計売上: <span>${game.score.toLocaleString()}円</span></p>
         <p>営業日数: ${game.day} 日目 | 提供客数: ${game.stats.servedCount} 人 | 立食い師撃退数: ${game.stats.ginjiDefeated} 人</p>
         <p class="comment">
-          荒くれ者「イカ天の権蔵」を納得させ、大台の目標売上3万円を突破！<br>
+          荒くれ者「イカ天の権蔵」を納得させ、大台の目標売上3万5千円を突破！<br>
           <small style="color: #ffd166;">※進行状況は自動的にオートセーブされました。</small><br><br>
-          いよいよ最終決戦！「続ける」を押すと、新トッピング（<b>海老天 🦐</b>）と最強の立食い師<b>『海老天の丈二』</b>が待ち受ける<b>極限の第4ステージ（目標4万円）</b>に突入します！
+          いよいよ最終決戦！「続ける」を押すと、新トッピング（<b>海老天 🦐</b>）と最強の立食い師<b>『海老天の丈二』</b>が待ち受ける<b>極限の第4ステージ（目標5万円）</b>に突入します！
         </p>
       </div>
     `;
@@ -913,7 +910,7 @@ document.addEventListener('DOMContentLoaded', () => {
       <div class="ending-box">
         <div class="ending-badge">✨ 堂々完結 / GRAND FINALE ✨</div>
         <div class="ending-story">
-          「月見の銀二」「コロッケの揚羽」「イカ天の権蔵」、そして最強最後の刺客「海老天の丈二」ら全立食い師たちを、その神速の茹で技と激辛撃退で見事ねじ伏せ、大目標売上<b>40,000円</b>の至高の金字塔を打ち立てた！<br>
+          「月見の銀二」「コロッケの揚羽」「イカ天の権蔵」、そして最強最後の刺客「海老天の丈二」ら全立食い師たちを、その神速の茹で技と激辛撃退で見事ねじ伏せ、大目標売上<b>50,000円</b>の至高の金字塔を打ち立てた！<br>
           江戸前立ち食い蕎麦の粋と情熱を極めたあなたの店は、日本全土に語り継がれる不滅の伝説となった――。
         </div>
 
@@ -996,6 +993,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // モーダルをタイトル（初期）状態に戻す
   function resetModalToStart() {
     modalBody.innerHTML = `
+      ${titleIntro}
       <p>ワンオペで立ち食い蕎麦屋を切り盛りしよう！</p>
 
       <div class="difficulty-select-section">
@@ -1016,19 +1014,19 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
       </div>
 
-      <div class="instruction-box">
+      <details class="instruction-box"><summary>遊び方・立食い師攻略ガイド</summary>
         <h4>⚠️ イレギュラー警報：立食い師たちの襲来！</h4>
         <ul>
           <li><b>『月見の銀二』</b>：かつお出汁 + 十割そば + 月見（第1ステージ目標1万円）</li>
-          <li><b>『コロッケの揚羽』</b>：こんぶ出汁 + 二八そば + コロッケ（第2ステージ目標2万円）</li>
-          <li><b>『イカ天の権蔵』</b>：宗田節出汁 + 田舎そば + イカ天（第3ステージ目標3万円）</li>
-          <li><b>『海老天の丈二』</b>：宗田節出汁 + 田舎そば + 海老天（第4ステージ目標4万円）</li>
+          <li><b>『コロッケの揚羽』</b>：こんぶ出汁 + 二八そば + コロッケ（第2ステージ目標2万5千円）</li>
+          <li><b>『イカ天の権蔵』</b>：宗田節出汁 + 田舎そば + イカ天（第3ステージ目標3万5千円）</li>
+          <li><b>『海老天の丈二』</b>：宗田節出汁 + 田舎そば + 海老天（第4ステージ目標5万円）</li>
           <li>🐾<b>『横取り猫の小鉄』</b>：第2ステージ以降、丼に乗せた具材をサッと横取り！</li>
           <li>撃退法：<b>【唐辛子増し】</b>にして提供するか、<b>ジャスト湯切り</b>で感動させよ！</li>
           <li>※ネギと唐辛子は<b>全丼デフォルト</b>で投入済。注文に応じて「増し/抜き」で調整！</li>
           <li>逃げ出したら<b>「お会計」連打</b>で捕まえろ！（※丈二は足が速く捕縛難度UP）</li>
         </ul>
-      </div>
+      </details>
     `;
     btnStartGame.textContent = '最初から始める！';
 

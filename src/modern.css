@@ -1,0 +1,60 @@
+/* Contemporary tea-house palette; gameplay geometry remains three aligned seats. */
+:root{--bg-dark:#102a2e;--wood-dark:#193a3e;--wood-main:#24494b;--wood-light:#52716d;--wood-border:#102c30;--accent-red:#f47763;--accent-gold:#efc98b;--text-gold:#efc98b;--text-light:#faf4e7;--accent-green:#70cbb7}
+body{background:radial-gradient(ellipse at top,#315952,#091c22);font-family:'Zen Maru Gothic',sans-serif}
+#app{max-width:1040px;background:#102a2e;box-shadow:0 0 100px #0005}
+button{font-family:inherit;transition:background .15s,box-shadow .15s,transform .15s}
+button:focus-visible,summary:focus-visible{outline:3px solid #70cbb7;outline-offset:3px}
+button:disabled{opacity:.4;cursor:not-allowed}
+.game-header{background:#102a2e;border-bottom:1px solid #52716d55;padding:8px 12px;gap:8px}
+.shop-sign{background:none;border:0;justify-content:space-between;padding:0}
+.shop-sign h1{font-size:20px;color:#fff3d9;letter-spacing:3px;text-shadow:none}
+.lantern{background:none;border:0;border-radius:0;color:#97bdb4;font-size:9px;letter-spacing:2px;padding:0}
+.lantern.right{color:#9ee0c7}
+.status-panel{background:#ffffff08;border:1px solid #ffffff12;border-radius:10px;padding:7px 5px}
+.stat-label{color:#a7c1bc;font-size:9px}.stat-val{font-variant-numeric:tabular-nums}.stat-val.highlight{color:#ff9b82}
+.btn-quit{background:none;border:0;color:#c1d1cd}.btn-icon,.btn-quit{min-width:32px;min-height:32px}
+.game-viewport{padding:8px;gap:8px;overflow-y:auto;justify-content:flex-start}
+.counter-section{background:none;border:0;border-radius:0;padding:0;box-shadow:none;flex:1 0 290px;min-height:290px}
+.seats-container{gap:7px}.seat-slot{background:#eae1cc;border:0;border-radius:12px;padding:5px;color:#183c3d}
+.customer-card{position:relative;gap:3px;justify-content:flex-start;border-radius:8px}
+.customer-speech{order:2;background:#fffcf4;border:0;box-shadow:none;height:76px;min-height:76px;max-height:76px;padding:4px}
+.customer-avatar{order:0;width:100%;height:auto;min-height:70px;max-height:150px;flex:1 1 110px;margin:0;filter:none;overflow:hidden;border-radius:7px}
+.anime-portrait{display:block;background-image:url('/art/characters.png');background-size:400% 400%;background-position:var(--portrait-x) var(--portrait-y);aspect-ratio:1;flex-shrink:0}
+.customer-avatar .anime-portrait{width:100%;max-width:150px;align-self:flex-start}
+.customer-name{order:1;color:#183c3d;font-size:11px;height:18px;line-height:18px}
+.customer-quote-box{display:none}.patience-bar,.escape-bar{order:3;height:4px;min-height:4px;border:0;background:#173c3d22;border-radius:3px;margin:1px 0}
+.patience-fill{background:#369c87}.escape-fill{background:#f47763}
+.btn-serve,.btn-catch{order:5;min-height:36px;height:36px;max-height:36px;background:#cf5948;color:#fff9ee;border:0;border-radius:7px;box-shadow:0 3px 0 #a33e35;font-size:12px;margin:0}
+.btn-catch{background:#aa3645}.patience-indicator{order:4;height:18px;min-height:18px;max-height:18px;flex-direction:row;justify-content:center;gap:4px;background:none!important;border:0;padding:0;margin:0;color:#245548!important}
+.patience-mood-line{display:none}.patience-time-line{font-size:10px;line-height:18px}.status-danger .patience-time-line{color:#b22f36}
+.ginji-card,.ogin-card,.gonzo-card,.joji-card{border:0!important;background:transparent!important;box-shadow:none!important}.ginji-card .customer-name,.ogin-card .customer-name,.gonzo-card .customer-name,.joji-card .customer-name{color:#b13e39}
+.defeated-portrait{filter:grayscale(.8);opacity:.7}.empty-seat-msg{margin:auto;color:#45655e!important;font-size:12px!important;letter-spacing:4px}.empty-seat-msg:before{content:'—';display:block;text-align:center;font-size:32px;margin-bottom:8px}
+.kitchen-section{flex:0 0 auto;overflow:visible;gap:7px;min-height:365px}
+.station-box{background:#1b3a3e;border:1px solid #ffffff14;border-radius:12px;padding:7px;flex:none}
+.station-title{color:#adc5be;border:0;text-align:left;letter-spacing:.6px;font-size:10px;margin-bottom:6px;padding:0}
+.bowl-station{min-height:128px}.bowls-container{min-height:99px}.bowl-slot-unit{border:1px solid #ffffff15;background:#102d32;border-radius:9px;min-height:96px}
+.bowl-slot-unit.unit-selected{border-color:#efc98b;background:#efc98b12;box-shadow:0 0 0 1px #efc98b40}
+.bowl-item{background:#f4e7ce;box-shadow:inset 0 -7px 0 #ccbea3,0 4px 8px #0003;border-color:#fff7e3}.bowl-select-tag{font-size:9px}
+.boil-station{min-height:95px}.pot-card{background:#102d32;border:0;border-radius:7px;padding:6px 4px;gap:6px}.pot-label{font-size:10px;color:#d5e1d6}.pot-btns{gap:4px}.btn-action{min-height:32px;height:32px;border:1px solid #ffffff20;background:#2e5756;border-radius:5px;font-size:10px}.gauge-wrap{height:8px;border:0;background:#081d23}.gauge-fill{background:linear-gradient(90deg,#f4b780,#75d9c3)}
+.ingredient-station{min-height:133px}.ingredient-container{gap:5px}.dashi-grid,.topping-grid{gap:5px;min-height:46px}.ingredient-btn{background:#2a4b4c;border:1px solid #ffffff12;border-radius:7px;min-height:46px;box-shadow:none;flex-direction:row;gap:5px}.ingredient-btn span{font-size:10px}.level2-locked,.level3-locked,.level4-locked{opacity:.4!important;filter:grayscale(1)}
+.modal-overlay{background:#0b242cee;backdrop-filter:blur(12px);padding:16px}
+.modal-card{background:#f7f0e1;color:#254344;border:1px solid #ffffff60;border-radius:20px;max-width:760px;max-height:94dvh;padding:22px;box-shadow:0 24px 100px #0006;text-align:left}
+.modal-card h2{font-size:24px;color:#173c3d;margin-bottom:15px;letter-spacing:3px}.modal-body>p{font-size:12px;margin:10px 0;color:#566b63}
+.title-hero{display:flex;position:relative;align-items:center;background:#eae1cc;border-radius:12px;overflow:hidden;min-height:235px}
+.hero-copy{position:relative;z-index:1;width:57%;padding:20px}.eyebrow{display:block;color:#48655e;letter-spacing:1.6px;font-size:8px;font-weight:700}.hero-copy h3{font-family:var(--font-mincho);font-size:38px;line-height:1.4;letter-spacing:2px;margin:12px 0;color:#183c3d}.hero-copy p{font-size:11px;line-height:1.9}.hero-tag{display:inline-block;margin-top:14px;border-top:1px solid #31554844;padding-top:8px;font-size:9px;color:#416258}
+.hero-chef{position:absolute;right:0;bottom:0;width:43%;mix-blend-mode:multiply}
+.rival-line{display:flex;align-items:center;gap:7px;margin:15px 0;color:#61756a;font-size:10px}.rival-line .anime-portrait{width:38px;border-radius:50%;border:2px solid #fff}.rival-line>span:first-child{margin-right:auto}.rival-line small{margin-left:auto}
+.difficulty-select-section{margin-top:10px}.difficulty-select-section>p{font-size:11px;letter-spacing:1px}.difficulty-options{flex-direction:row;gap:7px;margin-top:8px}.btn-diff{flex:1;min-width:0;background:transparent;color:#204641;border:1px solid #bbc7b9;border-radius:9px;flex-direction:column;align-items:flex-start;padding:10px;gap:4px}.btn-diff.active{background:#193e40;border-color:#193e40;box-shadow:0 3px 0 #a3b8a8}.diff-title{color:inherit;font-size:13px}.btn-diff.active .diff-title{color:#fff1d6}.btn-diff small{font-size:9px;color:#64796e}.btn-diff.active small{color:#b6cfc1}
+.instruction-box{background:transparent;border:0;border-top:1px solid #cdd2c0;border-radius:0;padding:12px 0;margin:14px 0 5px;font-size:11px;color:#486158}.instruction-box summary{cursor:pointer;font-weight:700;min-height:28px}.instruction-box h4{margin:8px 0;color:#aa493f}.instruction-box li{line-height:1.7}
+.modal-actions{display:flex;flex-direction:column;gap:8px;margin-top:10px}.btn-primary,.btn-secondary{background:#c95746;border:0;border-radius:9px;color:#fff6e7;min-height:48px;box-shadow:0 4px 0 #a13e33;font-size:15px;font-family:inherit;letter-spacing:1px}.btn-secondary{background:#20484a;box-shadow:0 3px 0 #153538;font-size:12px}
+.cutin-overlay{background:#102b32e8;backdrop-filter:blur(8px);pointer-events:none}.cutin-box{background:#f4ead5;border:1px solid #efc98b;border-radius:16px;color:#193d40;padding:20px;width:min(85vw,440px);box-shadow:0 20px 70px #0007;animation:portrait-enter .35s ease-out}.cutin-avatar .anime-portrait{width:min(52vw,235px);margin:auto;border-radius:12px}.cutin-title{letter-spacing:3px;color:#ba4e41;font-size:13px}.cutin-name{color:#193d40;font-size:24px}.cutin-text{color:#48605a;font-size:12px;line-height:1.8}.toast{border-radius:10px;font-family:inherit}
+@keyframes portrait-enter{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+@media(min-width:700px){.game-viewport{padding:14px;gap:12px}.counter-section{min-height:340px}.customer-avatar{max-height:180px}.customer-avatar .anime-portrait{max-width:190px}.customer-name{font-size:13px}.customer-speech{height:80px;min-height:80px;max-height:80px}.kitchen-section{min-height:365px}.ingredient-btn{min-height:47px}.station-title{font-size:11px}.bowl-side-col button{min-width:32px}.modal-card{padding:28px}.title-hero{min-height:290px}.hero-copy h3{font-size:48px}}
+@media(max-width:420px){.game-header{padding:6px 8px;gap:5px}.game-viewport{padding:5px;gap:5px}.seats-container{gap:4px}.counter-section{min-height:268px}.customer-avatar{min-height:65px}.customer-name{font-size:9px}.station-box{padding:5px}.modal-overlay{padding:10px}.modal-card{padding:16px;border-radius:15px}.title-hero{min-height:215px}.hero-copy{padding:14px;width:62%}.hero-copy h3{font-size:31px}.hero-copy p{font-size:10px}.hero-tag{font-size:8px}.hero-chef{width:53%;right:-7%}.rival-line{gap:4px;font-size:9px}.rival-line .anime-portrait{width:31px}.rival-line small{display:none}.btn-diff{padding:9px 6px}.btn-diff small{font-size:8px}.stat-val{font-size:10px}.kitchen-section{gap:5px}.ingredient-btn{gap:3px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
+.hidden{display:none!important}
+.bowl-action-btn{border-color:#719b8355;background:#244d43;box-shadow:none;border-radius:5px}
+.chili-side-btn,.chili-mashi-btn{background:#693b40;border-color:#ba7b7655;box-shadow:none}
+.bowl-trash-circle-btn{background:#354b53;border-color:#8ba0a655;box-shadow:none}
+.bowl-action-btn.active-spice{background:#efc98b;color:#153738;border-color:#efc98b}
+@media(max-width:420px){.hero-copy h3{font-size:26px;letter-spacing:0;white-space:nowrap}.hero-copy p{max-width:160px;font-size:9px}.hero-chef{width:50%;right:-3%}.hero-tag{font-size:7px}}
